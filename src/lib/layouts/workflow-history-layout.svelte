@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { twMerge as merge } from 'tailwind-merge';
-
   import { beforeNavigate, goto } from '$app/navigation';
   import { page } from '$app/state';
 
@@ -18,11 +16,7 @@
   import { isCategoryType } from '$lib/models/event-history/get-event-categorization';
   import WorkflowHistoryJson from '$lib/pages/workflow-history-json.svelte';
   import { clearActives } from '$lib/stores/active-events';
-  import {
-    eventFilterSort,
-    eventViewType,
-    minimizeEventView,
-  } from '$lib/stores/event-view';
+  import { eventFilterSort, eventViewType } from '$lib/stores/event-view';
   import {
     filteredEventHistory,
     fullEventHistory,
@@ -128,10 +122,7 @@
 <InputAndResults />
 <div class="relative">
   <div
-    class={merge(
-      'surface-background flex flex-wrap items-center justify-between gap-2 border-b border-subtle xl:gap-8',
-      !$minimizeEventView && 'sticky top-0 z-30 md:top-12',
-    )}
+    class="surface-background flex flex-wrap items-center justify-between gap-2 border-b border-subtle xl:gap-8"
   >
     <div class="items-bottom flex gap-4">
       <h2>
@@ -175,7 +166,7 @@
               : translate('common.ascending')}
           </ToggleButton>
         {/if}
-        <EventTypeFilter {compact} minimized={$minimizeEventView} />
+        <EventTypeFilter {compact} />
         <ToggleButton
           disabled={!workflow?.isRunning}
           data-testid="pause"
