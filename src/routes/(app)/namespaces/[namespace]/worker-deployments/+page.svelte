@@ -8,6 +8,7 @@
   import { translate } from '$lib/i18n/translate';
   import WorkerDeployments from '$lib/pages/deployments.svelte';
   import {
+    routeForWorkerConfiguration,
     routeForWorkerDeployments,
     routeForWorkers,
   } from '$lib/utilities/route-for';
@@ -16,6 +17,9 @@
 
   const workersHref = $derived(routeForWorkers({ namespace }));
   const deploymentsHref = $derived(routeForWorkerDeployments({ namespace }));
+  const configurationHref = $derived(
+    routeForWorkerConfiguration({ namespace }),
+  );
 </script>
 
 <PageTitle
@@ -41,6 +45,12 @@
         id="deployments-tab"
         href={deploymentsHref}
         active={true}
+      />
+      <Tab
+        label={translate('workers.configuration')}
+        id="configuration-tab"
+        href={configurationHref}
+        active={false}
       />
     </TabList>
   </Tabs>
