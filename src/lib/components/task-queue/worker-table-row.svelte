@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Badge from '$lib/holocene/badge.svelte';
   import { translate } from '$lib/i18n/translate';
   import type { WorkerInfo } from '$lib/types';
   import { routeForWorkerInstance } from '$lib/utilities/route-for';
@@ -84,6 +85,10 @@
         >{worker.workerHeartbeat?.nexusTaskSlotsInfo?.currentUsedSlots ?? 0} / {worker
           .workerHeartbeat?.nexusTaskSlotsInfo?.currentAvailableSlots ?? 0}</td
       >
+    {:else if label === translate('workers.type')}
+      <td><Badge>{translate('workers.type-traditional')}</Badge></td>
+    {:else}
+      <td></td>
     {/if}
   {/each}
 </tr>
