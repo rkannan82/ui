@@ -141,7 +141,11 @@ export async function validateLambdaArn(
   if (MOCK_LAMBDA_ARNS.includes(arn)) {
     return { valid: true, message: 'Lambda function verified' };
   }
-  return { valid: false, message: 'Function not found' };
+  return {
+    valid: false,
+    message:
+      'Lambda function not found. Verify the ARN and ensure the function exists in the specified region.',
+  };
 }
 
 export async function validateIamRole(
@@ -154,7 +158,11 @@ export async function validateIamRole(
   if (MOCK_IAM_ROLE_ARNS.includes(arn)) {
     return { valid: true, message: 'Permissions verified' };
   }
-  return { valid: false, message: 'Missing permissions' };
+  return {
+    valid: false,
+    message:
+      'IAM role lacks required permissions. Ensure the role has a trust policy allowing Temporal to assume it.',
+  };
 }
 
 export async function validateRegion(
@@ -178,5 +186,9 @@ export async function validateTaskQueue(
   if (MOCK_TASK_QUEUES.includes(name)) {
     return { valid: true, message: 'Task queue found' };
   }
-  return { valid: false, message: 'Task queue not found' };
+  return {
+    valid: true,
+    message:
+      'This will create a new task queue. Serverless workers require a dedicated task queue.',
+  };
 }

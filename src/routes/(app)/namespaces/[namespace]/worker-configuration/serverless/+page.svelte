@@ -5,6 +5,7 @@
   import Button from '$lib/holocene/button.svelte';
   import EmptyState from '$lib/holocene/empty-state.svelte';
   import Icon from '$lib/holocene/icon/icon.svelte';
+  import Link from '$lib/holocene/link.svelte';
   import {
     Menu,
     MenuButton,
@@ -38,8 +39,30 @@
 </div>
 
 {#if workers.length === 0}
-  <EmptyState title={translate('workers.serverless-empty-state')}>
-    <p>{translate('workers.serverless-empty-state-description')}</p>
+  <EmptyState title={translate('workers.serverless-empty-title')}>
+    <div class="flex flex-col gap-4">
+      <p class="text-sm text-secondary">
+        {translate('workers.serverless-empty-description')}
+      </p>
+      <div>
+        <p class="mb-2 text-sm font-medium">
+          {translate('workers.serverless-empty-prereq-title')}
+        </p>
+        <ul class="list-inside list-disc text-sm text-secondary">
+          <li>{translate('workers.serverless-empty-prereq-lambda')}</li>
+          <li>{translate('workers.serverless-empty-prereq-iam')}</li>
+          <li>{translate('workers.serverless-empty-prereq-queue')}</li>
+        </ul>
+      </div>
+      <div class="flex gap-4">
+        <Button href={createHref}
+          >{translate('workers.create-serverless-worker')}</Button
+        >
+        <Link href="https://docs.temporal.io/serverless-workers" newTab>
+          {translate('workers.serverless-docs-link')}
+        </Link>
+      </div>
+    </div>
   </EmptyState>
 {:else}
   <table class="w-full">

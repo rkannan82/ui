@@ -110,4 +110,54 @@ export const Strings = {
   'validation-region-mismatch': 'Cross-region: may increase latency',
   'validation-queue-available': 'Task queue name available',
   'validation-queue-exists': 'Task queue already in use',
+  'compute-provider': 'Compute Provider',
+  'compute-provider-description':
+    'Select how your worker activities will be executed.',
+  'provider-lambda': 'AWS Lambda',
+  'provider-lambda-description':
+    'Run activities as serverless Lambda function invocations.',
+  'provider-coming-soon': 'More providers coming soon',
+  'provider-coming-soon-description':
+    'Support for additional compute providers is planned.',
+  'setup-guide-title': 'Prerequisites: AWS Setup Guide',
+  'setup-guide-intro':
+    'Before creating a serverless worker, you need a Lambda function and an IAM role in your AWS account.',
+  'setup-guide-lambda-console': 'Open AWS Lambda Console',
+  'setup-guide-iam-console': 'Open AWS IAM Console',
+  'setup-guide-iam-note':
+    'The IAM role must have a trust policy allowing Temporal to assume it. Use the templates below as a starting point.',
+  'validation-checking-lambda': 'Validating Lambda function access...',
+  'validation-checking-iam': 'Validating IAM role permissions...',
+  'validation-checking-region': 'Checking region compatibility...',
+  'validation-checking-queue': 'Checking task queue availability...',
+  'validation-function-not-found-detail':
+    'Lambda function not found. Verify the ARN and ensure the function exists in the specified region.',
+  'validation-permissions-missing-detail':
+    'IAM role lacks required permissions. Ensure the role has a trust policy allowing Temporal to assume it.',
+  'validation-queue-new':
+    'This will create a new task queue. Serverless workers require a dedicated task queue.',
+  'serverless-empty-title': 'Get Started with Serverless Workers',
+  'serverless-empty-description':
+    'Serverless workers execute your Temporal activities as AWS Lambda function invocations, eliminating the need to manage worker infrastructure.',
+  'serverless-empty-prereq-title': 'What you need:',
+  'serverless-empty-prereq-lambda':
+    'An AWS Lambda function with your activity code',
+  'serverless-empty-prereq-iam':
+    'An IAM role allowing Temporal to invoke your function',
+  'serverless-empty-prereq-queue':
+    'A task queue name for your serverless worker',
+  'serverless-docs-link': 'Learn more about serverless workers',
+  'open-lambda-console': 'Open in Lambda Console',
+  'open-iam-console': 'Open in IAM Console',
+  'copy-arn': 'Copy ARN',
+  'copy-task-queue': 'Copy task queue name',
+  copied: 'Copied!',
+  'lambda-arn-help':
+    'The Amazon Resource Name of your Lambda function. Use an unqualified ARN (no version/alias suffix).',
+  'iam-role-help':
+    'Temporal assumes this role to invoke your Lambda function. The role needs a trust policy for Temporal and permission to invoke the function.',
+  'task-queue-help':
+    'Serverless workers require a dedicated task queue. You cannot share a task queue between serverless and traditional workers.',
+  'region-help':
+    'Choose the AWS region where your Lambda function is deployed. For best performance, match your Temporal namespace region.',
 } as const;

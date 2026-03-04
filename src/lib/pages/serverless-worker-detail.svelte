@@ -5,12 +5,15 @@
   import Badge from '$lib/holocene/badge.svelte';
   import Button from '$lib/holocene/button.svelte';
   import Card from '$lib/holocene/card.svelte';
+  import CopyButton from '$lib/holocene/copyable/button.svelte';
+  import Link from '$lib/holocene/link.svelte';
   import Modal from '$lib/holocene/modal.svelte';
   import { translate } from '$lib/i18n/translate';
   import {
     deleteServerlessWorker,
     getServerlessWorker,
   } from '$lib/services/serverless-worker-service';
+  import { copyToClipboard } from '$lib/utilities/copy-to-clipboard';
   import {
     routeForServerlessWorkerEdit,
     routeForWorkers,
@@ -21,6 +24,20 @@
 
   const worker = $derived(getServerlessWorker(id));
   let showDeleteModal = $state(false);
+
+  const { copy: copyLambda, copied: lambdaCopied } = copyToClipboard();
+  const { copy: copyIam, copied: iamCopied } = copyToClipboard();
+  const { copy: copyTaskQueue, copied: taskQueueCopied } = copyToClipboard();
+
+  function parseLambdaArn(arn: string) {
+    const parts = arn.split(':');
+    return { region: parts[3], functionName: parts[6] };
+  }
+
+  function parseIamRoleArn(arn: string) {
+    const parts = arn.split('/');
+    return { roleName: parts[parts.length - 1] };
+  }
 
   const statusBadgeType = $derived.by(() => {
     if (!worker) return 'default';
@@ -73,17 +90,45 @@
             <span class="text-xs font-medium text-secondary"
               >{translate('workers.lambda-arn')}</span
             >
-            <span class="break-all font-mono text-sm text-primary"
-              >{worker.lambdaArn}</span
+            <div class="flex items-center gap-2">
+              <span class="break-all font-mono text-sm text-primary"
+                >{worker.lambdaArn}</span
+              >
+              <CopyButton
+                copyIconTitle={translate('workers.copy-arn')}
+                copySuccessIconTitle={translate('workers.copied')}
+                copied={$lambdaCopied}
+                on:click={(e) => copyLambda(e, worker.lambdaArn)}
+              />
+            </div>
+            <Link
+              href={`https://console.aws.amazon.com/lambda/home?region=${parseLambdaArn(worker.lambdaArn).region}#/functions/${parseLambdaArn(worker.lambdaArn).functionName}`}
+              newTab
             >
+              {translate('workers.open-lambda-console')}
+            </Link>
           </div>
           <div class="flex flex-col gap-1">
             <span class="text-xs font-medium text-secondary"
               >{translate('workers.iam-role-arn')}</span
             >
-            <span class="break-all font-mono text-sm text-primary"
-              >{worker.iamRoleArn}</span
+            <div class="flex items-center gap-2">
+              <span class="break-all font-mono text-sm text-primary"
+                >{worker.iamRoleArn}</span
+              >
+              <CopyButton
+                copyIconTitle={translate('workers.copy-arn')}
+                copySuccessIconTitle={translate('workers.copied')}
+                copied={$iamCopied}
+                on:click={(e) => copyIam(e, worker.iamRoleArn)}
+              />
+            </div>
+            <Link
+              href={`https://console.aws.amazon.com/iam/home#/roles/${parseIamRoleArn(worker.iamRoleArn).roleName}`}
+              newTab
             >
+              {translate('workers.open-iam-console')}
+            </Link>
           </div>
           <div class="flex flex-col gap-1">
             <span class="text-xs font-medium text-secondary"
@@ -95,7 +140,15 @@
             <span class="text-xs font-medium text-secondary"
               >{translate('workers.task-queue')}</span
             >
-            <span class="text-sm text-primary">{worker.taskQueue}</span>
+            <div class="flex items-center gap-2">
+              <span class="text-sm text-primary">{worker.taskQueue}</span>
+              <CopyButton
+                copyIconTitle={translate('workers.copy-task-queue')}
+                copySuccessIconTitle={translate('workers.copied')}
+                copied={$taskQueueCopied}
+                on:click={(e) => copyTaskQueue(e, worker.taskQueue)}
+              />
+            </div>
           </div>
         </div>
       </Card>
