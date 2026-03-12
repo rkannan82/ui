@@ -16,7 +16,8 @@ let mockWorkers: ServerlessWorker[] = [
   {
     id: 'slw-a1b2c3d4-e5f6-7890-abcd-ef1234567890',
     name: 'order-processor',
-    status: 'active',
+    status: 'running',
+    compute: 'Lambda',
     lambdaArn:
       'arn:aws:lambda:us-east-1:123456789012:function:temporal-order-processor',
     iamRoleArn:
@@ -27,13 +28,16 @@ let mockWorkers: ServerlessWorker[] = [
     maxConcurrentActivities: 100,
     maxTaskQueueActivitiesPerSecond: 50,
     idleTimeoutSeconds: 300,
+    lastHeartbeat: '2025-12-27T23:06:15.500Z',
+    sdkVersion: 'Python 1.17.0',
     createdAt: '2024-11-01T09:00:00Z',
     updatedAt: '2024-11-15T14:22:00Z',
   },
   {
     id: 'slw-b2c3d4e5-f6a7-8901-bcde-f12345678901',
     name: 'payment-handler',
-    status: 'active',
+    status: 'running',
+    compute: 'Lambda',
     lambdaArn:
       'arn:aws:lambda:us-west-2:123456789012:function:temporal-payment-handler',
     iamRoleArn:
@@ -44,13 +48,16 @@ let mockWorkers: ServerlessWorker[] = [
     maxConcurrentActivities: 50,
     maxTaskQueueActivitiesPerSecond: 25,
     idleTimeoutSeconds: 120,
+    lastHeartbeat: '2025-12-27T23:06:15.500Z',
+    sdkVersion: 'TypeScript 2.9.2',
     createdAt: '2024-10-15T11:30:00Z',
     updatedAt: '2024-11-20T08:45:00Z',
   },
   {
     id: 'slw-c3d4e5f6-a7b8-9012-cdef-123456789012',
     name: 'notification-sender',
-    status: 'degraded',
+    status: 'stopped',
+    compute: 'Cloud Run',
     lambdaArn:
       'arn:aws:lambda:eu-west-1:123456789012:function:temporal-notification-sender',
     iamRoleArn:
@@ -61,13 +68,16 @@ let mockWorkers: ServerlessWorker[] = [
     maxConcurrentActivities: 200,
     maxTaskQueueActivitiesPerSecond: 100,
     idleTimeoutSeconds: 600,
+    lastHeartbeat: '2025-12-27T23:06:15.500Z',
+    sdkVersion: 'Python 1.17.0',
     createdAt: '2024-09-20T16:00:00Z',
     updatedAt: '2024-11-22T03:12:00Z',
   },
   {
     id: 'slw-d4e5f6a7-b8c9-0123-defa-234567890123',
     name: 'data-pipeline',
-    status: 'provisioning',
+    status: 'draining',
+    compute: 'Self-Managed',
     lambdaArn:
       'arn:aws:lambda:ap-southeast-1:123456789012:function:temporal-data-pipeline',
     iamRoleArn:
@@ -78,6 +88,8 @@ let mockWorkers: ServerlessWorker[] = [
     maxConcurrentActivities: 80,
     maxTaskQueueActivitiesPerSecond: 40,
     idleTimeoutSeconds: 900,
+    lastHeartbeat: '2025-12-27T23:06:15.500Z',
+    sdkVersion: 'Python 1.17.0',
     createdAt: '2024-11-25T10:00:00Z',
     updatedAt: '2024-11-25T10:00:00Z',
   },
@@ -101,7 +113,10 @@ export function createServerlessWorker(
   const worker: ServerlessWorker = {
     ...input,
     id: crypto.randomUUID(),
-    status: 'provisioning',
+    status: 'running',
+    compute: input.compute || 'Lambda',
+    sdkVersion: input.sdkVersion || 'Python 1.17.0',
+    lastHeartbeat: now,
     createdAt: now,
     updatedAt: now,
   };

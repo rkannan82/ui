@@ -21,6 +21,16 @@
   const query = $derived(page.url.searchParams.get('query') || '');
   const serverlessWorkers = getServerlessWorkers();
 
+  const filteredServerlessWorkers = $derived(
+    query
+      ? serverlessWorkers.filter(
+          (sw) =>
+            sw.name.toLowerCase().includes(query.toLowerCase()) ||
+            sw.taskQueue.toLowerCase().includes(query.toLowerCase()),
+        )
+      : serverlessWorkers,
+  );
+
   let search = $state(query);
 
   const searchParamUpdate = debounce((value: string) => {
@@ -96,12 +106,12 @@
     {#each visibleItems as worker, i (i)}
       <WorkerTableRow {worker} {columns} {namespace} filterable />
     {/each}
-    {#each serverlessWorkers as sw (sw.id)}
+    {#each filteredServerlessWorkers as sw (sw.id)}
       <ServerlessWorkerTableRow worker={sw} {columns} {namespace} />
     {/each}
 
     <svelte:fragment slot="empty">
-      {#if serverlessWorkers.length === 0}
+      {#if filteredServerlessWorkers.length === 0}
         <WorkersActiveEmptyState />
       {/if}
     </svelte:fragment>
