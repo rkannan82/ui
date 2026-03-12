@@ -1,31 +1,47 @@
 <script lang="ts">
+  import debounce from 'just-debounce';
+
   import { page } from '$app/state';
 
   import WorkerTableRow from '$lib/components/task-queue/worker-table-row.svelte';
-  import EmptyState from '$lib/holocene/empty-state.svelte';
+  import Button from '$lib/holocene/button.svelte';
+  import Input from '$lib/holocene/input/input.svelte';
   import PaginatedTable from '$lib/holocene/table/paginated-table/api-paginated.svelte';
   import { translate } from '$lib/i18n/translate';
   import { getServerlessWorkers } from '$lib/services/serverless-worker-service';
   import { fetchPaginatedWorkers } from '$lib/services/worker-service';
+  import { routeForServerlessWorkerCreate } from '$lib/utilities/route-for';
+  import { updateQueryParameters } from '$lib/utilities/update-query-parameters';
 
   import ServerlessWorkerTableRow from './serverless-worker-table-row.svelte';
+  import WorkersActiveEmptyState from './workers-active-empty-state.svelte';
 
   let { namespace } = $props();
 
   const query = $derived(page.url.searchParams.get('query') || '');
   const serverlessWorkers = getServerlessWorkers();
 
+  let search = $state(query);
+
+  const searchParamUpdate = debounce((value: string) => {
+    updateQueryParameters({
+      parameter: 'query',
+      value,
+      url: page.url,
+    });
+  }, 350);
+
+  $effect(() => {
+    searchParamUpdate(search);
+  });
+
   const columns = [
-    { label: translate('workers.instance') },
-    { label: translate('workers.task-queue') },
     { label: translate('workers.status') },
-    { label: translate('workers.type') },
-    { label: translate('workers.identity') },
-    { label: translate('workers.host-name') },
-    { label: translate('workers.workflow-task-slots') },
-    { label: translate('workers.activity-task-slots') },
-    { label: translate('workers.nexus-task-slots') },
-    { label: translate('workers.sdk') },
+    { label: translate('workers.name') },
+    { label: translate('workers.task-queue') },
+    { label: translate('workers.compute') },
+    { label: translate('workers.last-heartbeat') },
+    { label: translate('workers.sdk-version') },
     { label: '' },
   ];
 
@@ -39,6 +55,23 @@
     }),
   );
 </script>
+
+<div class="mb-4 flex items-center justify-between gap-4">
+  <div class="flex-1">
+    <Input
+      id="worker-search"
+      label={translate('workers.filter-workers')}
+      labelHidden
+      type="search"
+      placeholder={translate('workers.filter-placeholder')}
+      bind:value={search}
+      icon="search"
+    />
+  </div>
+  <Button href={routeForServerlessWorkerCreate({ namespace })}>
+    {translate('workers.create-serverless-worker')}
+  </Button>
+</div>
 
 {#key query}
   <PaginatedTable
@@ -69,7 +102,7 @@
 
     <svelte:fragment slot="empty">
       {#if serverlessWorkers.length === 0}
-        <EmptyState title={translate('workers.empty-state-title')}></EmptyState>
+        <WorkersActiveEmptyState />
       {/if}
     </svelte:fragment>
   </PaginatedTable>

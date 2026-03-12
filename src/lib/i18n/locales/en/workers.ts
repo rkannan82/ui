@@ -56,6 +56,8 @@ export const Strings = {
   'serverless-empty-state': 'No Serverless Workers Configured',
   'serverless-empty-state-description':
     'Create a serverless worker to get started.',
+  'filter-workers': 'Filter workers',
+  'filter-placeholder': 'Filter by Name or Task Queue',
   'create-serverless-worker': 'Create Serverless Worker',
   'back-to-configuration': 'Back to Configuration',
   'serverless-detail-title': 'Serverless Worker Details',
@@ -160,4 +162,22 @@ export const Strings = {
     'Serverless workers require a dedicated task queue. You cannot share a task queue between serverless and traditional workers.',
   'region-help':
     'Choose the AWS region where your Lambda function is deployed. For best performance, match your Temporal namespace region.',
+  active: 'Active',
+  name: 'Name',
+  compute: 'Compute',
+  'last-heartbeat': 'Last Heartbeat',
+  'sdk-version': 'SDK Version',
+  'self-managed': 'Self-Managed',
+  'empty-no-workers-title': 'No Workers yet',
+  'empty-no-workers-description':
+    'Deploy Workers without managing servers, clusters, or scaling. Connect your serverless function and Temporal handles invocation automatically.',
+  'available-integrations': 'Available Integrations',
+  'integration-aws-lambda': 'AWS Lambda',
+  'integration-google-cloud-run': 'Google Cloud Run',
+  'integration-vercel-functions': 'Vercel Functions',
+  'self-managed-banner': 'Running Self-Managed Workers?',
+  'view-docs': 'View Docs',
+  'empty-no-deployments-title': 'No Deployments yet',
+  'empty-no-deployments-description':
+    'Enable Worker Deployments to manage your Workers more effectively.',
 } as const;
