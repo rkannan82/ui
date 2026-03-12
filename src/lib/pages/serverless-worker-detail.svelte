@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
+  import ServerlessWorkerStatus from '$lib/components/workers/serverless-worker-status.svelte';
   import Alert from '$lib/holocene/alert.svelte';
-  import Badge from '$lib/holocene/badge.svelte';
   import Button from '$lib/holocene/button.svelte';
   import Card from '$lib/holocene/card.svelte';
   import CopyButton from '$lib/holocene/copyable/button.svelte';
@@ -39,22 +39,6 @@
     return { roleName: parts[parts.length - 1] };
   }
 
-  const statusBadgeType = $derived.by(() => {
-    if (!worker) return 'default';
-    switch (worker.status) {
-      case 'active':
-        return 'success';
-      case 'degraded':
-        return 'warning';
-      case 'inactive':
-        return 'danger';
-      case 'provisioning':
-        return 'primary';
-      default:
-        return 'default';
-    }
-  });
-
   function handleDelete() {
     deleteServerlessWorker(id);
     goto(routeForWorkers({ namespace }));
@@ -70,7 +54,7 @@
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
         <h2 class="text-xl font-semibold">{worker.name}</h2>
-        <Badge type={statusBadgeType}>{worker.status}</Badge>
+        <ServerlessWorkerStatus status={worker.status} />
       </div>
       <div class="flex gap-2">
         <Button href={routeForServerlessWorkerEdit({ namespace, id })}>
