@@ -2,6 +2,7 @@ import type {
   MockValidationResult,
   ServerlessWorker,
   ServerlessWorkerCreateInput,
+  ServerlessWorkerDetail,
   ServerlessWorkerUpdateInput,
 } from '$lib/types/serverless-workers';
 
@@ -104,6 +105,77 @@ export function getServerlessWorkers(): ServerlessWorker[] {
 
 export function getServerlessWorker(id: string): ServerlessWorker | undefined {
   return mockWorkers.find((w) => w.id === id);
+}
+
+export function getServerlessWorkerDetail(
+  id: string,
+): ServerlessWorkerDetail | undefined {
+  const worker = getServerlessWorker(id);
+  if (!worker) return undefined;
+
+  const mockMetricsCard = (type: string) => ({
+    slotsUsed: Math.floor(Math.random() * 8) + 1,
+    slotsAvailable: 10,
+    tasksProcessed: Math.floor(Math.random() * 5000) + 100,
+    pollerCount: Math.floor(Math.random() * 5) + 1,
+    pollerType: type,
+    lastPoll: new Date(Date.now() - Math.random() * 60000).toISOString(),
+  });
+
+  return {
+    ...worker,
+    metrics: {
+      workflow: mockMetricsCard('Workflow'),
+      activity: mockMetricsCard('Activity'),
+      nexus: mockMetricsCard('Nexus'),
+      localActivities: mockMetricsCard('Local Activity'),
+    },
+    hostInfo: {
+      region: worker.region,
+      hostName: `ip-10-0-${Math.floor(Math.random() * 255)}-${Math.floor(Math.random() * 255)}.ec2.internal`,
+      processId: String(Math.floor(Math.random() * 65535) + 1000),
+      instanceKey: crypto.randomUUID().slice(0, 8),
+      workerGroupingKey: `${worker.name}-group-1`,
+      cpuUsage: Math.floor(Math.random() * 60) + 10,
+      memoryUsage: Math.floor(Math.random() * 50) + 20,
+    },
+    cache: {
+      cacheSize: Math.floor(Math.random() * 500) + 50,
+      cacheHitsPercent: Math.floor(Math.random() * 30) + 70,
+      activeThreadCount: Math.floor(Math.random() * 8) + 2,
+    },
+    diagnostics: {
+      pollSuccessRatePercent: Math.floor(Math.random() * 5) + 95,
+      rateLimit: worker.maxTaskQueueActivitiesPerSecond,
+    },
+    versions: [
+      {
+        status: 'Current' as const,
+        name: `${worker.name}-v3`,
+        buildId: `build-${crypto.randomUUID().slice(0, 8)}`,
+        deployedAt: worker.updatedAt,
+      },
+      {
+        status: 'Ramping' as const,
+        name: `${worker.name}-v4`,
+        buildId: `build-${crypto.randomUUID().slice(0, 8)}`,
+        deployedAt: new Date(Date.now() - 86400000).toISOString(),
+        rampingPercentage: 25,
+      },
+      {
+        status: 'Draining' as const,
+        name: `${worker.name}-v2`,
+        buildId: `build-${crypto.randomUUID().slice(0, 8)}`,
+        deployedAt: new Date(Date.now() - 604800000).toISOString(),
+      },
+      {
+        status: 'Drained' as const,
+        name: `${worker.name}-v1`,
+        buildId: `build-${crypto.randomUUID().slice(0, 8)}`,
+        deployedAt: new Date(Date.now() - 2592000000).toISOString(),
+      },
+    ],
+  };
 }
 
 export function createServerlessWorker(
