@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Badge from '$lib/holocene/badge.svelte';
   import Icon from '$lib/holocene/icon/icon.svelte';
   import {
     Menu,
@@ -7,12 +6,16 @@
     MenuContainer,
     MenuItem,
   } from '$lib/holocene/menu';
+  import Modal from '$lib/holocene/modal.svelte';
   import { translate } from '$lib/i18n/translate';
+  import { deleteServerlessWorker } from '$lib/services/serverless-worker-service';
   import type { ServerlessWorker } from '$lib/types/serverless-workers';
   import {
     routeForServerlessWorker,
     routeForServerlessWorkerEdit,
   } from '$lib/utilities/route-for';
+
+  import ServerlessWorkerStatus from './serverless-worker-status.svelte';
 
   type Props = {
     worker: ServerlessWorker;
@@ -21,6 +24,12 @@
   };
 
   let { worker, namespace, columns }: Props = $props();
+  let showDeleteModal = $state(false);
+
+  function handleDelete() {
+    deleteServerlessWorker(worker.id);
+    showDeleteModal = false;
+  }
 
   const detailHref = $derived(
     routeForServerlessWorker({ namespace, id: worker.id }),
@@ -33,29 +42,22 @@
 
 <tr>
   {#each columns as { label } (label)}
-    {#if label === translate('workers.type')}
+    {#if label === translate('workers.status')}
+      <td><ServerlessWorkerStatus status={worker.status} /></td>
+    {:else if label === translate('workers.name')}
       <td
-        ><Badge type="primary">{translate('workers.type-serverless')}</Badge
+        ><a href={detailHref} class="text-blue-700 hover:underline"
+          >{worker.name}</a
         ></td
       >
-    {:else if label === translate('workers.status')}
-      <td
-        ><Badge type={worker.status === 'active' ? 'success' : 'warning'}
-          >{worker.status}</Badge
-        ></td
-      >
-    {:else if label === translate('workers.instance')}
-      <td>
-        <a href={detailHref} class="text-blue-700 hover:underline">
-          {worker.name}
-        </a>
-      </td>
     {:else if label === translate('workers.task-queue')}
       <td>{worker.taskQueue}</td>
-    {:else if label === translate('workers.identity')}
-      <td class="font-mono text-xs">{worker.lambdaArn.split(':').pop()}</td>
-    {:else if label === translate('workers.host-name')}
-      <td>{worker.region}</td>
+    {:else if label === translate('workers.compute')}
+      <td>{worker.compute}</td>
+    {:else if label === translate('workers.last-heartbeat')}
+      <td>{worker.lastHeartbeat}</td>
+    {:else if label === translate('workers.sdk-version')}
+      <td>{worker.sdkVersion}</td>
     {:else if label === ''}
       <td class="w-10 text-right">
         <MenuContainer>
@@ -74,14 +76,27 @@
             <MenuItem href={editHref}>
               {translate('workers.edit-serverless-worker')}
             </MenuItem>
-            <MenuItem destructive>
+            <MenuItem destructive onclick={() => (showDeleteModal = true)}>
               {translate('common.delete')}
             </MenuItem>
           </Menu>
         </MenuContainer>
       </td>
     {:else}
-      <td class="text-secondary">—</td>
+      <td></td>
     {/if}
   {/each}
 </tr>
+
+<Modal
+  id="delete-serverless-worker-modal-{worker.id}"
+  open={showDeleteModal}
+  confirmText={translate('workers.delete-serverless-worker')}
+  cancelText={translate('common.cancel')}
+  confirmType="destructive"
+  on:confirmModal={handleDelete}
+  on:cancelModal={() => (showDeleteModal = false)}
+>
+  <h3 slot="title">{translate('workers.delete-serverless-worker')}</h3>
+  <p slot="content">{translate('workers.delete-confirm')}</p>
+</Modal>
