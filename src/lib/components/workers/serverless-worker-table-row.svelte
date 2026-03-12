@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Timestamp from '$lib/components/timestamp.svelte';
   import Icon from '$lib/holocene/icon/icon.svelte';
   import {
     Menu,
@@ -53,9 +54,14 @@
     {:else if label === translate('workers.task-queue')}
       <td>{worker.taskQueue}</td>
     {:else if label === translate('workers.compute')}
-      <td>{worker.compute}</td>
+      <td>
+        <div class="flex items-center gap-1.5">
+          <Icon name="robot" />
+          <span>{worker.compute}</span>
+        </div>
+      </td>
     {:else if label === translate('workers.last-heartbeat')}
-      <td>{worker.lastHeartbeat}</td>
+      <td><Timestamp dateTime={worker.lastHeartbeat} /></td>
     {:else if label === translate('workers.sdk-version')}
       <td>{worker.sdkVersion}</td>
     {:else if label === ''}
