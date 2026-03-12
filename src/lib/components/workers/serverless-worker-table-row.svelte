@@ -6,7 +6,6 @@
     MenuContainer,
     MenuItem,
   } from '$lib/holocene/menu';
-  import Modal from '$lib/holocene/modal.svelte';
   import { translate } from '$lib/i18n/translate';
   import { deleteServerlessWorker } from '$lib/services/serverless-worker-service';
   import type { ServerlessWorker } from '$lib/types/serverless-workers';
@@ -15,6 +14,7 @@
     routeForServerlessWorkerEdit,
   } from '$lib/utilities/route-for';
 
+  import DeleteWorkerModal from './delete-worker-modal.svelte';
   import ServerlessWorkerStatus from './serverless-worker-status.svelte';
 
   type Props = {
@@ -88,15 +88,9 @@
   {/each}
 </tr>
 
-<Modal
-  id="delete-serverless-worker-modal-{worker.id}"
+<DeleteWorkerModal
   open={showDeleteModal}
-  confirmText={translate('workers.delete-serverless-worker')}
-  cancelText={translate('common.cancel')}
-  confirmType="destructive"
+  workerName={worker.name}
   on:confirmModal={handleDelete}
   on:cancelModal={() => (showDeleteModal = false)}
->
-  <h3 slot="title">{translate('workers.delete-serverless-worker')}</h3>
-  <p slot="content">{translate('workers.delete-confirm')}</p>
-</Modal>
+/>
