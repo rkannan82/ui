@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
+  import ServerlessWorkerDetailSkeleton from '$lib/components/workers/serverless-worker-detail-skeleton.svelte';
   import ServerlessWorkerStatus from '$lib/components/workers/serverless-worker-status.svelte';
   import Alert from '$lib/holocene/alert.svelte';
   import Button from '$lib/holocene/button.svelte';
@@ -19,8 +20,8 @@
     routeForWorkers,
   } from '$lib/utilities/route-for';
 
-  type Props = { id: string; namespace: string };
-  let { id, namespace }: Props = $props();
+  type Props = { id: string; namespace: string; loading?: boolean };
+  let { id, namespace, loading = false }: Props = $props();
 
   const worker = $derived(getServerlessWorker(id));
   let showDeleteModal = $state(false);
@@ -45,7 +46,9 @@
   }
 </script>
 
-{#if !worker}
+{#if loading}
+  <ServerlessWorkerDetailSkeleton />
+{:else if !worker}
   <Alert intent="warning" title="Serverless worker not found">
     No serverless worker found with ID "{id}".
   </Alert>
