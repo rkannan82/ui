@@ -1,9 +1,6 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-
   import DeploymentStatus from '$lib/components/deployments/deployment-status.svelte';
   import Timestamp from '$lib/components/timestamp.svelte';
-  import DeleteWorkerModal from '$lib/components/workers/delete-worker-modal.svelte';
   import ServerlessWorkerDetailSkeleton from '$lib/components/workers/serverless-worker-detail-skeleton.svelte';
   import ServerlessWorkerStatus from '$lib/components/workers/serverless-worker-status.svelte';
   import Alert from '$lib/holocene/alert.svelte';
@@ -19,7 +16,6 @@
   import Tabs from '$lib/holocene/tab/tabs.svelte';
   import { translate } from '$lib/i18n/translate';
   import {
-    deleteServerlessWorker,
     getServerlessWorker,
     getServerlessWorkerDetail,
   } from '$lib/services/serverless-worker-service';
@@ -35,7 +31,6 @@
   let { id, namespace, loading = false }: Props = $props();
 
   const worker = $derived(getServerlessWorker(id));
-  let showDeleteModal = $state(false);
   const detail = $derived(getServerlessWorkerDetail(id));
 
   const { copy: copyLambda, copied: lambdaCopied } = copyToClipboard();
@@ -49,11 +44,6 @@
   function parseIamRoleArn(arn: string) {
     const parts = arn.split('/');
     return { roleName: parts[parts.length - 1] };
-  }
-
-  function handleDelete() {
-    deleteServerlessWorker(id);
-    goto(routeForWorkers({ namespace }));
   }
 </script>
 
@@ -484,11 +474,4 @@
       </TabPanel>
     </Tabs>
   </div>
-
-  <DeleteWorkerModal
-    open={showDeleteModal}
-    workerName={worker.name}
-    on:confirmModal={handleDelete}
-    on:cancelModal={() => (showDeleteModal = false)}
-  />
 {/if}
