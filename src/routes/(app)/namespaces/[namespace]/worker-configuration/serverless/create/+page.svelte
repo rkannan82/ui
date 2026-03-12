@@ -6,12 +6,10 @@
   import Link from '$lib/holocene/link.svelte';
   import { translate } from '$lib/i18n/translate';
   import ServerlessWorkerCreate from '$lib/pages/serverless-worker-create.svelte';
-  import { routeForWorkerConfiguration } from '$lib/utilities/route-for';
+  import { routeForWorkers } from '$lib/utilities/route-for';
 
   const namespace = $derived(page.params.namespace);
-  const backHref = $derived(
-    `${routeForWorkerConfiguration({ namespace })}/serverless`,
-  );
+  const workersHref = $derived(routeForWorkers({ namespace }));
 </script>
 
 <PageTitle
@@ -20,12 +18,12 @@
 />
 
 <header class="mb-4 flex flex-col gap-2">
-  <Link href={backHref} icon="chevron-left">
-    {translate('workers.back-to-configuration')}
+  <Link href={workersHref} icon="chevron-left">
+    {translate('workers.back-to-workers')}
   </Link>
   <h1 class="text-xl font-semibold">
     {translate('workers.create-serverless-title')}
   </h1>
 </header>
 
-<ServerlessWorkerCreate {namespace} onSuccess={() => goto(backHref)} />
+<ServerlessWorkerCreate {namespace} onSuccess={() => goto(workersHref)} />

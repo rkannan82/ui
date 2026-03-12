@@ -280,7 +280,7 @@ resource "aws_iam_role_policy" "invoke_lambda" {
       </h3>
       <Input
         value={String($form.maxWorkers)}
-        on:input={(e) =>
+        oninput={(e) =>
           ($form.maxWorkers = Number(
             (e.currentTarget as HTMLInputElement).value,
           ))}
@@ -293,7 +293,7 @@ resource "aws_iam_role_policy" "invoke_lambda" {
       />
       <Input
         value={String($form.maxConcurrentActivities)}
-        on:input={(e) =>
+        oninput={(e) =>
           ($form.maxConcurrentActivities = Number(
             (e.currentTarget as HTMLInputElement).value,
           ))}
@@ -306,7 +306,7 @@ resource "aws_iam_role_policy" "invoke_lambda" {
       />
       <Input
         value={String($form.maxTaskQueueActivitiesPerSecond)}
-        on:input={(e) =>
+        oninput={(e) =>
           ($form.maxTaskQueueActivitiesPerSecond = Number(
             (e.currentTarget as HTMLInputElement).value,
           ))}
@@ -319,7 +319,7 @@ resource "aws_iam_role_policy" "invoke_lambda" {
       />
       <Input
         value={String($form.idleTimeoutSeconds)}
-        on:input={(e) =>
+        oninput={(e) =>
           ($form.idleTimeoutSeconds = Number(
             (e.currentTarget as HTMLInputElement).value,
           ))}
@@ -432,7 +432,7 @@ resource "aws_iam_role_policy" "invoke_lambda" {
           error={!!$errors.lambdaArn?.[0]}
           placeholder={translate('workers.lambda-arn-placeholder')}
           required
-          on:blur={checkLambdaArn}
+          onblur={checkLambdaArn}
         />
         {#if lambdaValidation.checking}
           <div class="flex items-center gap-2 text-xs text-secondary">
@@ -467,7 +467,7 @@ resource "aws_iam_role_policy" "invoke_lambda" {
           error={!!$errors.iamRoleArn?.[0]}
           placeholder={translate('workers.iam-role-placeholder')}
           required
-          on:blur={checkIamRole}
+          onblur={checkIamRole}
         />
         {#if iamValidation.checking}
           <div class="flex items-center gap-2 text-xs text-secondary">
@@ -538,7 +538,7 @@ resource "aws_iam_role_policy" "invoke_lambda" {
           error={!!$errors.taskQueue?.[0]}
           placeholder={translate('workers.task-queue-placeholder')}
           required
-          on:blur={checkTaskQueue}
+          onblur={checkTaskQueue}
         />
         {#if taskQueueValidation.checking}
           <div class="flex items-center gap-2 text-xs text-secondary">
@@ -560,7 +560,7 @@ resource "aws_iam_role_policy" "invoke_lambda" {
         <div class="flex flex-col gap-4 p-4">
           <Input
             value={String($form.maxWorkers)}
-            on:input={(e) =>
+            oninput={(e) =>
               ($form.maxWorkers = Number(
                 (e.currentTarget as HTMLInputElement).value,
               ))}
@@ -571,7 +571,7 @@ resource "aws_iam_role_policy" "invoke_lambda" {
           />
           <Input
             value={String($form.maxConcurrentActivities)}
-            on:input={(e) =>
+            oninput={(e) =>
               ($form.maxConcurrentActivities = Number(
                 (e.currentTarget as HTMLInputElement).value,
               ))}
@@ -582,7 +582,7 @@ resource "aws_iam_role_policy" "invoke_lambda" {
           />
           <Input
             value={String($form.maxTaskQueueActivitiesPerSecond)}
-            on:input={(e) =>
+            oninput={(e) =>
               ($form.maxTaskQueueActivitiesPerSecond = Number(
                 (e.currentTarget as HTMLInputElement).value,
               ))}
@@ -593,7 +593,7 @@ resource "aws_iam_role_policy" "invoke_lambda" {
           />
           <Input
             value={String($form.idleTimeoutSeconds)}
-            on:input={(e) =>
+            oninput={(e) =>
               ($form.idleTimeoutSeconds = Number(
                 (e.currentTarget as HTMLInputElement).value,
               ))}
