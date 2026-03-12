@@ -5,7 +5,6 @@
   import { zodClient } from 'sveltekit-superforms/adapters';
   import { z } from 'zod/v3';
 
-  import Accordion from '$lib/holocene/accordion/accordion.svelte';
   import Alert from '$lib/holocene/alert.svelte';
   import Button from '$lib/holocene/button.svelte';
   import Card from '$lib/holocene/card.svelte';
@@ -342,277 +341,289 @@ resource "aws_iam_role_policy" "invoke_lambda" {
     </form>
   </div>
 {:else}
-  <div class="flex w-full flex-col gap-6 xl:w-1/2">
-    <div class="mb-4">
-      <h3 class="mb-2 text-base font-semibold">
-        {translate('workers.compute-provider')}
-      </h3>
-      <RadioGroup
-        name="provider"
-        group={provider}
-        description={translate('workers.compute-provider-description')}
-      >
-        <RadioInput
-          value="lambda"
-          id="provider-lambda"
-          label={translate('workers.provider-lambda')}
-          description={translate('workers.provider-lambda-description')}
-        />
-        <RadioInput
-          value="other"
-          id="provider-other"
-          label={translate('workers.provider-coming-soon')}
-          description={translate('workers.provider-coming-soon-description')}
-          disabled
-        />
-      </RadioGroup>
+  <div class="grid grid-cols-1 gap-8 xl:grid-cols-3">
+    <div class="col-span-1 flex flex-col gap-6 xl:col-span-2">
+      <div class="mb-4">
+        <h3 class="mb-2 text-base font-semibold">
+          {translate('workers.compute-provider')}
+        </h3>
+        <RadioGroup
+          name="provider"
+          group={provider}
+          description={translate('workers.compute-provider-description')}
+        >
+          <RadioInput
+            value="lambda"
+            id="provider-lambda"
+            label={translate('workers.provider-lambda')}
+            description={translate('workers.provider-lambda-description')}
+          />
+          <RadioInput
+            value="other"
+            id="provider-other"
+            label={translate('workers.provider-coming-soon')}
+            description={translate('workers.provider-coming-soon-description')}
+            disabled
+          />
+        </RadioGroup>
+      </div>
+
+      <form class="flex w-full flex-col gap-6" use:enhance novalidate>
+        <div class="flex flex-col gap-4">
+          <h3 class="text-base font-semibold">
+            {translate('workers.configuration-section')}
+          </h3>
+          <Input
+            bind:value={$form.name}
+            id="name"
+            name="name"
+            label={translate('workers.name-label')}
+            hintText={$errors.name?.[0] || translate('workers.name-hint')}
+            error={!!$errors.name?.[0]}
+            placeholder={translate('workers.name-placeholder')}
+            required
+          />
+          <div class="flex flex-col gap-1">
+            <div class="flex items-center gap-1">
+              <label for="taskQueue" class="text-sm font-medium">
+                {translate('workers.task-queue-label')}
+              </label>
+              <Tooltip top text={translate('workers.task-queue-help')}>
+                <Icon name="circle-question" class="h-4 w-4 text-secondary" />
+              </Tooltip>
+            </div>
+            <Input
+              bind:value={$form.taskQueue}
+              id="taskQueue"
+              name="taskQueue"
+              labelHidden
+              label={translate('workers.task-queue-label')}
+              hintText={$errors.taskQueue?.[0] ||
+                translate('workers.task-queue-hint')}
+              error={!!$errors.taskQueue?.[0]}
+              placeholder={translate('workers.task-queue-placeholder')}
+              required
+              onblur={checkTaskQueue}
+            />
+            {#if taskQueueValidation.checking}
+              <div class="flex items-center gap-2 text-xs text-secondary">
+                <Icon name="spinner" class="h-3 w-3 animate-spin" />
+                <span>{translate('workers.validation-checking-queue')}</span>
+              </div>
+            {:else if taskQueueValidation.result}
+              <Alert
+                intent={taskQueueValidation.result.valid ? 'success' : 'info'}
+                title={taskQueueValidation.result.message}
+              />
+            {/if}
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <h3 class="text-base font-semibold">
+            {translate('workers.compute-section')}
+          </h3>
+          <div class="flex flex-col gap-1">
+            <div class="flex items-center gap-1">
+              <label for="lambdaArn" class="text-sm font-medium">
+                {translate('workers.lambda-arn-label')}
+              </label>
+              <Tooltip top text={translate('workers.lambda-arn-help')}>
+                <Icon name="circle-question" class="h-4 w-4 text-secondary" />
+              </Tooltip>
+            </div>
+            <Input
+              bind:value={$form.lambdaArn}
+              id="lambdaArn"
+              name="lambdaArn"
+              labelHidden
+              label={translate('workers.lambda-arn-label')}
+              hintText={$errors.lambdaArn?.[0] ||
+                translate('workers.lambda-arn-hint')}
+              error={!!$errors.lambdaArn?.[0]}
+              placeholder={translate('workers.lambda-arn-placeholder')}
+              required
+              onblur={checkLambdaArn}
+            />
+            {#if lambdaValidation.checking}
+              <div class="flex items-center gap-2 text-xs text-secondary">
+                <Icon name="spinner" class="h-3 w-3 animate-spin" />
+                <span>{translate('workers.validation-checking-lambda')}</span>
+              </div>
+            {:else if lambdaValidation.result}
+              <Alert
+                intent={lambdaValidation.result.valid ? 'success' : 'error'}
+                title={lambdaValidation.result.message}
+              />
+            {/if}
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <div class="flex items-center gap-1">
+              <label for="iamRoleArn" class="text-sm font-medium">
+                {translate('workers.iam-role-label')}
+              </label>
+              <Tooltip top text={translate('workers.iam-role-help')}>
+                <Icon name="circle-question" class="h-4 w-4 text-secondary" />
+              </Tooltip>
+            </div>
+            <Input
+              bind:value={$form.iamRoleArn}
+              id="iamRoleArn"
+              name="iamRoleArn"
+              labelHidden
+              label={translate('workers.iam-role-label')}
+              hintText={$errors.iamRoleArn?.[0] ||
+                translate('workers.iam-role-hint')}
+              error={!!$errors.iamRoleArn?.[0]}
+              placeholder={translate('workers.iam-role-placeholder')}
+              required
+              onblur={checkIamRole}
+            />
+            {#if iamValidation.checking}
+              <div class="flex items-center gap-2 text-xs text-secondary">
+                <Icon name="spinner" class="h-3 w-3 animate-spin" />
+                <span>{translate('workers.validation-checking-iam')}</span>
+              </div>
+            {:else if iamValidation.result}
+              <Alert
+                intent={iamValidation.result.valid ? 'success' : 'error'}
+                title={iamValidation.result.message}
+              />
+            {/if}
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <div class="flex items-center gap-1">
+              <label for="region" class="text-sm font-medium">
+                {translate('workers.region-label')}
+              </label>
+              <Tooltip top text={translate('workers.region-help')}>
+                <Icon name="circle-question" class="h-4 w-4 text-secondary" />
+              </Tooltip>
+            </div>
+            <Combobox
+              id="region"
+              label={translate('workers.region-label')}
+              labelHidden
+              placeholder="Search regions..."
+              noResultsText="No matching regions"
+              options={regions}
+              optionValueKey="value"
+              optionLabelKey="label"
+              bind:value={$form.region}
+              onchange={checkRegion}
+              required
+              error={$errors.region?.[0]}
+            />
+            {#if regionValidation.checking}
+              <div class="flex items-center gap-2 text-xs text-secondary">
+                <Icon name="spinner" class="h-3 w-3 animate-spin" />
+                <span>{translate('workers.validation-checking-region')}</span>
+              </div>
+            {:else if regionValidation.result}
+              <Alert
+                intent={regionValidation.result.valid ? 'success' : 'warning'}
+                title={regionValidation.result.message}
+              />
+            {/if}
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <h3 class="text-base font-semibold">
+            {translate('workers.scaling-section')}
+          </h3>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Input
+              value={String($form.maxWorkers)}
+              oninput={(e) =>
+                ($form.maxWorkers = Number(
+                  (e.currentTarget as HTMLInputElement).value,
+                ))}
+              id="maxWorkers"
+              name="maxWorkers"
+              label={translate('workers.max-workers-label')}
+              hintText={translate('workers.max-workers-hint')}
+            />
+            <Input
+              value={String($form.maxConcurrentActivities)}
+              oninput={(e) =>
+                ($form.maxConcurrentActivities = Number(
+                  (e.currentTarget as HTMLInputElement).value,
+                ))}
+              id="maxConcurrentActivities"
+              name="maxConcurrentActivities"
+              label={translate('workers.max-concurrent-label')}
+              hintText={translate('workers.max-concurrent-hint')}
+            />
+            <Input
+              value={String($form.maxTaskQueueActivitiesPerSecond)}
+              oninput={(e) =>
+                ($form.maxTaskQueueActivitiesPerSecond = Number(
+                  (e.currentTarget as HTMLInputElement).value,
+                ))}
+              id="maxRate"
+              name="maxRate"
+              label={translate('workers.max-rate-label')}
+              hintText={translate('workers.max-rate-hint')}
+            />
+            <Input
+              value={String($form.idleTimeoutSeconds)}
+              oninput={(e) =>
+                ($form.idleTimeoutSeconds = Number(
+                  (e.currentTarget as HTMLInputElement).value,
+                ))}
+              id="idleTimeout"
+              name="idleTimeout"
+              label={translate('workers.idle-timeout-label')}
+              hintText={translate('workers.idle-timeout-hint')}
+            />
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <Button type="submit" loading={$submitting}>
+            {submitButtonText}
+          </Button>
+          <Button variant="ghost" href={cancelHref}>
+            {translate('common.cancel')}
+          </Button>
+        </div>
+      </form>
     </div>
 
-    <Accordion
-      title={translate('workers.setup-guide-title')}
-      id="setup-guide"
-      open
-    >
-      <div class="flex flex-col gap-4 p-4">
-        <p class="text-sm text-secondary">
-          {translate('workers.setup-guide-intro')}
-        </p>
-        <div class="flex gap-4">
-          <Link href="https://console.aws.amazon.com/lambda" newTab>
-            {translate('workers.setup-guide-lambda-console')}
-          </Link>
-          <Link href="https://console.aws.amazon.com/iam" newTab>
-            {translate('workers.setup-guide-iam-console')}
-          </Link>
-        </div>
-        <p class="text-sm text-secondary">
-          {translate('workers.setup-guide-iam-note')}
-        </p>
-        <CodeBlock
-          tabs={['CloudFormation', 'Terraform']}
-          bind:activeTab
-          content={snippetContent}
-          language={snippetLanguage}
-          copyable
-          copyIconTitle="Copy snippet"
-          copySuccessIconTitle="Copied!"
-        />
-      </div>
-    </Accordion>
-
-    <form class="flex w-full flex-col gap-4" use:enhance novalidate>
-      <Input
-        bind:value={$form.name}
-        id="name"
-        name="name"
-        label={translate('workers.name-label')}
-        hintText={$errors.name?.[0] || translate('workers.name-hint')}
-        error={!!$errors.name?.[0]}
-        placeholder={translate('workers.name-placeholder')}
-        required
-      />
-
-      <div class="flex flex-col gap-1">
-        <div class="flex items-center gap-1">
-          <label for="lambdaArn" class="text-sm font-medium">
-            {translate('workers.lambda-arn-label')}
-          </label>
-          <Tooltip top text={translate('workers.lambda-arn-help')}>
-            <Icon name="circle-question" class="h-4 w-4 text-secondary" />
-          </Tooltip>
-        </div>
-        <Input
-          bind:value={$form.lambdaArn}
-          id="lambdaArn"
-          name="lambdaArn"
-          labelHidden
-          label={translate('workers.lambda-arn-label')}
-          hintText={$errors.lambdaArn?.[0] ||
-            translate('workers.lambda-arn-hint')}
-          error={!!$errors.lambdaArn?.[0]}
-          placeholder={translate('workers.lambda-arn-placeholder')}
-          required
-          onblur={checkLambdaArn}
-        />
-        {#if lambdaValidation.checking}
-          <div class="flex items-center gap-2 text-xs text-secondary">
-            <Icon name="spinner" class="h-3 w-3 animate-spin" />
-            <span>{translate('workers.validation-checking-lambda')}</span>
+    <div class="col-span-1">
+      <Card class="sticky top-4">
+        <h3 class="mb-4 text-base font-semibold">
+          {translate('workers.setup-guide-title')}
+        </h3>
+        <div class="flex flex-col gap-4">
+          <p class="text-sm text-secondary">
+            {translate('workers.setup-guide-intro')}
+          </p>
+          <div class="flex flex-col gap-2">
+            <Link href="https://console.aws.amazon.com/lambda" newTab>
+              {translate('workers.setup-guide-lambda-console')}
+            </Link>
+            <Link href="https://console.aws.amazon.com/iam" newTab>
+              {translate('workers.setup-guide-iam-console')}
+            </Link>
           </div>
-        {:else if lambdaValidation.result}
-          <Alert
-            intent={lambdaValidation.result.valid ? 'success' : 'error'}
-            title={lambdaValidation.result.message}
-          />
-        {/if}
-      </div>
-
-      <div class="flex flex-col gap-1">
-        <div class="flex items-center gap-1">
-          <label for="iamRoleArn" class="text-sm font-medium">
-            {translate('workers.iam-role-label')}
-          </label>
-          <Tooltip top text={translate('workers.iam-role-help')}>
-            <Icon name="circle-question" class="h-4 w-4 text-secondary" />
-          </Tooltip>
-        </div>
-        <Input
-          bind:value={$form.iamRoleArn}
-          id="iamRoleArn"
-          name="iamRoleArn"
-          labelHidden
-          label={translate('workers.iam-role-label')}
-          hintText={$errors.iamRoleArn?.[0] ||
-            translate('workers.iam-role-hint')}
-          error={!!$errors.iamRoleArn?.[0]}
-          placeholder={translate('workers.iam-role-placeholder')}
-          required
-          onblur={checkIamRole}
-        />
-        {#if iamValidation.checking}
-          <div class="flex items-center gap-2 text-xs text-secondary">
-            <Icon name="spinner" class="h-3 w-3 animate-spin" />
-            <span>{translate('workers.validation-checking-iam')}</span>
-          </div>
-        {:else if iamValidation.result}
-          <Alert
-            intent={iamValidation.result.valid ? 'success' : 'error'}
-            title={iamValidation.result.message}
-          />
-        {/if}
-      </div>
-
-      <div class="flex flex-col gap-1">
-        <div class="flex items-center gap-1">
-          <label for="region" class="text-sm font-medium">
-            {translate('workers.region-label')}
-          </label>
-          <Tooltip top text={translate('workers.region-help')}>
-            <Icon name="circle-question" class="h-4 w-4 text-secondary" />
-          </Tooltip>
-        </div>
-        <Combobox
-          id="region"
-          label={translate('workers.region-label')}
-          labelHidden
-          placeholder="Search regions..."
-          noResultsText="No matching regions"
-          options={regions}
-          optionValueKey="value"
-          optionLabelKey="label"
-          bind:value={$form.region}
-          onchange={checkRegion}
-          required
-          error={$errors.region?.[0]}
-        />
-        {#if regionValidation.checking}
-          <div class="flex items-center gap-2 text-xs text-secondary">
-            <Icon name="spinner" class="h-3 w-3 animate-spin" />
-            <span>{translate('workers.validation-checking-region')}</span>
-          </div>
-        {:else if regionValidation.result}
-          <Alert
-            intent={regionValidation.result.valid ? 'success' : 'warning'}
-            title={regionValidation.result.message}
-          />
-        {/if}
-      </div>
-
-      <div class="flex flex-col gap-1">
-        <div class="flex items-center gap-1">
-          <label for="taskQueue" class="text-sm font-medium">
-            {translate('workers.task-queue-label')}
-          </label>
-          <Tooltip top text={translate('workers.task-queue-help')}>
-            <Icon name="circle-question" class="h-4 w-4 text-secondary" />
-          </Tooltip>
-        </div>
-        <Input
-          bind:value={$form.taskQueue}
-          id="taskQueue"
-          name="taskQueue"
-          labelHidden
-          label={translate('workers.task-queue-label')}
-          hintText={$errors.taskQueue?.[0] ||
-            translate('workers.task-queue-hint')}
-          error={!!$errors.taskQueue?.[0]}
-          placeholder={translate('workers.task-queue-placeholder')}
-          required
-          onblur={checkTaskQueue}
-        />
-        {#if taskQueueValidation.checking}
-          <div class="flex items-center gap-2 text-xs text-secondary">
-            <Icon name="spinner" class="h-3 w-3 animate-spin" />
-            <span>{translate('workers.validation-checking-queue')}</span>
-          </div>
-        {:else if taskQueueValidation.result}
-          <Alert
-            intent={taskQueueValidation.result.valid ? 'success' : 'info'}
-            title={taskQueueValidation.result.message}
-          />
-        {/if}
-      </div>
-
-      <Accordion
-        title={translate('workers.advanced-config')}
-        id="advanced-config"
-      >
-        <div class="flex flex-col gap-4 p-4">
-          <Input
-            value={String($form.maxWorkers)}
-            oninput={(e) =>
-              ($form.maxWorkers = Number(
-                (e.currentTarget as HTMLInputElement).value,
-              ))}
-            id="maxWorkers"
-            name="maxWorkers"
-            label={translate('workers.max-workers-label')}
-            hintText={translate('workers.max-workers-hint')}
-          />
-          <Input
-            value={String($form.maxConcurrentActivities)}
-            oninput={(e) =>
-              ($form.maxConcurrentActivities = Number(
-                (e.currentTarget as HTMLInputElement).value,
-              ))}
-            id="maxConcurrentActivities"
-            name="maxConcurrentActivities"
-            label={translate('workers.max-concurrent-label')}
-            hintText={translate('workers.max-concurrent-hint')}
-          />
-          <Input
-            value={String($form.maxTaskQueueActivitiesPerSecond)}
-            oninput={(e) =>
-              ($form.maxTaskQueueActivitiesPerSecond = Number(
-                (e.currentTarget as HTMLInputElement).value,
-              ))}
-            id="maxRate"
-            name="maxRate"
-            label={translate('workers.max-rate-label')}
-            hintText={translate('workers.max-rate-hint')}
-          />
-          <Input
-            value={String($form.idleTimeoutSeconds)}
-            oninput={(e) =>
-              ($form.idleTimeoutSeconds = Number(
-                (e.currentTarget as HTMLInputElement).value,
-              ))}
-            id="idleTimeout"
-            name="idleTimeout"
-            label={translate('workers.idle-timeout-label')}
-            hintText={translate('workers.idle-timeout-hint')}
+          <p class="text-sm text-secondary">
+            {translate('workers.setup-guide-iam-note')}
+          </p>
+          <CodeBlock
+            tabs={['CloudFormation', 'Terraform']}
+            bind:activeTab
+            content={snippetContent}
+            language={snippetLanguage}
+            copyable
+            copyIconTitle="Copy snippet"
+            copySuccessIconTitle="Copied!"
           />
         </div>
-      </Accordion>
-
-      <div class="flex gap-4">
-        <Button type="submit" loading={$submitting}>
-          {submitButtonText}
-        </Button>
-        <Button variant="ghost" href={cancelHref}>
-          {translate('common.cancel')}
-        </Button>
-      </div>
-    </form>
+      </Card>
+    </div>
   </div>
 {/if}
