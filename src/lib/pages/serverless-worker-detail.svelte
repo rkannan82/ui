@@ -1,6 +1,9 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
+
   import DeploymentStatus from '$lib/components/deployments/deployment-status.svelte';
   import Timestamp from '$lib/components/timestamp.svelte';
+  import DeleteWorkerModal from '$lib/components/workers/delete-worker-modal.svelte';
   import ServerlessWorkerDetailSkeleton from '$lib/components/workers/serverless-worker-detail-skeleton.svelte';
   import ServerlessWorkerStatus from '$lib/components/workers/serverless-worker-status.svelte';
   import Alert from '$lib/holocene/alert.svelte';
@@ -18,6 +21,7 @@
   import Table from '$lib/holocene/table/table.svelte';
   import { translate } from '$lib/i18n/translate';
   import {
+    deleteServerlessWorker,
     getServerlessWorker,
     getServerlessWorkerDetail,
   } from '$lib/services/serverless-worker-service';
@@ -35,8 +39,15 @@
   const worker = $derived(getServerlessWorker(id));
   const detail = $derived(getServerlessWorkerDetail(id));
 
+  let showDeleteModal = $state(false);
+
   const { copy: copyLambda, copied: lambdaCopied } = copyToClipboard();
   const { copy: copyIam, copied: iamCopied } = copyToClipboard();
+
+  function handleDelete() {
+    deleteServerlessWorker(id);
+    goto(routeForWorkers({ namespace }));
+  }
 
   function parseLambdaArn(arn: string) {
     const parts = arn.split(':');
@@ -77,9 +88,14 @@
         <ServerlessWorkerStatus status={worker.status} />
         <h2 class="text-2xl font-semibold">{worker.name}</h2>
       </div>
-      <Button href={routeForServerlessWorkerEdit({ namespace, id })}>
-        {translate('workers.edit-serverless-worker')}
-      </Button>
+      <div class="flex items-center gap-2">
+        <Button href={routeForServerlessWorkerEdit({ namespace, id })}>
+          {translate('workers.edit-serverless-worker')}
+        </Button>
+        <Button variant="destructive" on:click={() => (showDeleteModal = true)}>
+          {translate('common.delete')}
+        </Button>
+      </div>
     </div>
 
     <div class="flex items-center gap-6 border-b border-subtle pb-4">
@@ -483,4 +499,11 @@
       </TabPanel>
     </Tabs>
   </div>
+
+  <DeleteWorkerModal
+    open={showDeleteModal}
+    workerName={worker.name}
+    on:confirmModal={handleDelete}
+    on:cancelModal={() => (showDeleteModal = false)}
+  />
 {/if}
