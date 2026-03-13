@@ -1,6 +1,6 @@
 <script lang="ts">
+  import ServerlessWorkerCreateForm from '$lib/components/workers/serverless-worker-form/serverless-worker-create-form.svelte';
   import { translate } from '$lib/i18n/translate';
-  import ServerlessWorkerForm from '$lib/pages/serverless-worker-form.svelte';
   import { createServerlessWorker } from '$lib/services/serverless-worker-service';
   import type { ServerlessWorkerCreateInput } from '$lib/types/serverless-workers';
   import { routeForWorkers } from '$lib/utilities/route-for';
@@ -13,7 +13,7 @@
   let { namespace, onSuccess }: Props = $props();
 </script>
 
-<ServerlessWorkerForm
+<ServerlessWorkerCreateForm
   {namespace}
   submitButtonText={translate('workers.create-serverless-worker')}
   cancelHref={routeForWorkers({ namespace })}

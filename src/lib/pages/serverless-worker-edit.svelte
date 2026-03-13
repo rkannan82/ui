@@ -1,9 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
+  import ServerlessWorkerEditForm from '$lib/components/workers/serverless-worker-form/serverless-worker-edit-form.svelte';
   import Alert from '$lib/holocene/alert.svelte';
   import { translate } from '$lib/i18n/translate';
-  import ServerlessWorkerForm from '$lib/pages/serverless-worker-form.svelte';
   import {
     deleteServerlessWorker,
     getServerlessWorker,
@@ -32,7 +32,7 @@
     No serverless worker found with ID "{id}".
   </Alert>
 {:else}
-  <ServerlessWorkerForm
+  <ServerlessWorkerEditForm
     {namespace}
     {worker}
     submitButtonText={translate('workers.save-changes')}
