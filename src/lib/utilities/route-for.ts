@@ -369,14 +369,6 @@ export const routeForWorkerDeploymentVersion = ({
   );
 };
 
-export const routeForWorkerConfiguration = ({
-  namespace,
-}: {
-  namespace: string;
-}): ResolvedPathname => {
-  return resolve('/namespaces/[namespace]/worker-configuration', { namespace });
-};
-
 export const routeForServerlessWorker = ({
   namespace,
   id,
@@ -402,6 +394,16 @@ export function routeForServerlessWorkerEdit({
     id,
   });
 }
+
+export const routeForServerlessWorkerCreate = ({
+  namespace,
+}: {
+  namespace: string;
+}): ResolvedPathname => {
+  return resolve('/namespaces/[namespace]/serverless-workers/create', {
+    namespace,
+  });
+};
 
 export const routeForRelationships = (
   parameters: WorkflowParameters,

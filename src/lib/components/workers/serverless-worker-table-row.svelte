@@ -1,21 +1,10 @@
 <script lang="ts">
   import Timestamp from '$lib/components/timestamp.svelte';
   import Icon from '$lib/holocene/icon/icon.svelte';
-  import {
-    Menu,
-    MenuButton,
-    MenuContainer,
-    MenuItem,
-  } from '$lib/holocene/menu';
   import { translate } from '$lib/i18n/translate';
-  import { deleteServerlessWorker } from '$lib/services/serverless-worker-service';
   import type { ServerlessWorker } from '$lib/types/serverless-workers';
-  import {
-    routeForServerlessWorker,
-    routeForServerlessWorkerEdit,
-  } from '$lib/utilities/route-for';
+  import { routeForServerlessWorker } from '$lib/utilities/route-for';
 
-  import DeleteWorkerModal from './delete-worker-modal.svelte';
   import ServerlessWorkerStatus from './serverless-worker-status.svelte';
 
   type Props = {
@@ -25,20 +14,10 @@
   };
 
   let { worker, namespace, columns }: Props = $props();
-  let showDeleteModal = $state(false);
-
-  function handleDelete() {
-    deleteServerlessWorker(worker.id);
-    showDeleteModal = false;
-  }
 
   const detailHref = $derived(
     routeForServerlessWorker({ namespace, id: worker.id }),
   );
-  const editHref = $derived(
-    routeForServerlessWorkerEdit({ namespace, id: worker.id }),
-  );
-  const menuId = $derived(`serverless-worker-menu-${worker.id}`);
 </script>
 
 <tr>
@@ -64,39 +43,8 @@
       <td><Timestamp dateTime={worker.lastHeartbeat} /></td>
     {:else if label === translate('workers.sdk-version')}
       <td>{worker.sdkVersion}</td>
-    {:else if label === ''}
-      <td class="w-10 text-right">
-        <MenuContainer>
-          <MenuButton
-            controls={menuId}
-            hasIndicator={false}
-            variant="ghost"
-            size="xs"
-          >
-            <Icon name="vertical-ellipsis" />
-          </MenuButton>
-          <Menu id={menuId} position="right">
-            <MenuItem href={detailHref}>
-              {translate('common.view')}
-            </MenuItem>
-            <MenuItem href={editHref}>
-              {translate('workers.edit-serverless-worker')}
-            </MenuItem>
-            <MenuItem destructive onclick={() => (showDeleteModal = true)}>
-              {translate('common.delete')}
-            </MenuItem>
-          </Menu>
-        </MenuContainer>
-      </td>
     {:else}
       <td></td>
     {/if}
   {/each}
 </tr>
-
-<DeleteWorkerModal
-  open={showDeleteModal}
-  workerName={worker.name}
-  on:confirmModal={handleDelete}
-  on:cancelModal={() => (showDeleteModal = false)}
-/>

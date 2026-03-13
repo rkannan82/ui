@@ -34,7 +34,6 @@
     routeForNexus,
     routeForSchedules,
     routeForStandaloneActivities,
-    routeForWorkerConfiguration,
     routeForWorkerDeployments,
     routeForWorkers,
     routeForWorkflows,
@@ -81,7 +80,6 @@
       schedulesRoute: routeForSchedules({ namespace }),
       batchOperationsRoute: routeForBatchOperations({ namespace }),
       workersRoute: routeForWorkers({ namespace }),
-      workerConfigurationRoute: routeForWorkerConfiguration({ namespace }),
       workerDeploymentsRoute: routeForWorkerDeployments({ namespace }),
       archivalRoute: routeForArchivalWorkflows({ namespace }),
       namespacesRoute: routeForNamespaces(),
@@ -97,7 +95,6 @@
       schedulesRoute,
       batchOperationsRoute,
       workersRoute,
-      workerConfigurationRoute,
       workerDeploymentsRoute,
       archivalRoute,
       namespacesRoute,
@@ -109,7 +106,6 @@
       schedulesRoute: string;
       batchOperationsRoute: string;
       workersRoute: string;
-      workerConfigurationRoute: string;
       workerDeploymentsRoute: string;
       archivalRoute: string;
       namespacesRoute: string;
@@ -130,7 +126,6 @@
           !path.includes(batchOperationsRoute) &&
           !path.includes(workersRoute) &&
           !path.includes(workerDeploymentsRoute) &&
-          !path.includes(workerConfigurationRoute) &&
           !path.includes('/serverless-workers') &&
           !path.includes(standaloneActivitiesRoute) &&
           !path.includes(archivalRoute),
@@ -170,7 +165,6 @@
         isActive: (path) =>
           path.includes(workersRoute) ||
           path.includes(workerDeploymentsRoute) ||
-          path.includes(workerConfigurationRoute) ||
           path.includes('/serverless-workers'),
       },
       {
@@ -214,7 +208,6 @@
     schedulesRoute,
     batchOperationsRoute,
     workersRoute,
-    workerConfigurationRoute,
     workerDeploymentsRoute,
     archivalRoute,
     standaloneActivitiesRoute,
@@ -225,7 +218,6 @@
       schedulesRoute,
       workersRoute,
       workerDeploymentsRoute,
-      workerConfigurationRoute,
       batchOperationsRoute,
       archivalRoute,
       standaloneActivitiesRoute,

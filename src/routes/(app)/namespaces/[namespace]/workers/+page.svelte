@@ -8,7 +8,6 @@
   import Tabs from '$lib/holocene/tab/tabs.svelte';
   import { translate } from '$lib/i18n/translate';
   import {
-    routeForWorkerConfiguration,
     routeForWorkerDeployments,
     routeForWorkers,
   } from '$lib/utilities/route-for';
@@ -17,9 +16,6 @@
 
   const workersHref = $derived(routeForWorkers({ namespace }));
   const deploymentsHref = $derived(routeForWorkerDeployments({ namespace }));
-  const configurationHref = $derived(
-    routeForWorkerConfiguration({ namespace }),
-  );
 </script>
 
 <PageTitle title={translate('workers.workers')} url={page.url.href} />
@@ -32,8 +28,8 @@
   <Tabs>
     <TabList label={translate('workers.worker-views')}>
       <Tab
-        label={translate('workers.workers')}
-        id="workers-tab"
+        label={translate('workers.active')}
+        id="active-tab"
         href={workersHref}
         active={true}
       />
@@ -41,12 +37,6 @@
         label={translate('deployments.deployments')}
         id="deployments-tab"
         href={deploymentsHref}
-        active={false}
-      />
-      <Tab
-        label={translate('workers.configuration')}
-        id="configuration-tab"
-        href={configurationHref}
         active={false}
       />
     </TabList>

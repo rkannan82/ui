@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Badge from '$lib/holocene/badge.svelte';
   import { translate } from '$lib/i18n/translate';
   import type { WorkerInfo } from '$lib/types';
   import { routeForWorkerInstance } from '$lib/utilities/route-for';
@@ -25,25 +24,11 @@
 
 <tr>
   {#each columns as { label } (label)}
-    {#if label === translate('workers.identity')}
-      <WorkerTableCell
-        attribute="WorkerIdentity"
-        value={worker.workerHeartbeat.workerIdentity}
-        {filterable}
-      />
-    {:else if label === translate('workers.task-queue')}
-      <WorkerTableCell
-        attribute="TaskQueue"
-        value={worker.workerHeartbeat.taskQueue}
-        {filterable}
-      />
-    {:else if label === translate('workers.host-name')}
-      <WorkerTableCell
-        attribute="HostName"
-        value={worker.workerHeartbeat.hostInfo.hostName}
-        {filterable}
-      />
-    {:else if label === translate('workers.instance')}
+    {#if label === translate('workers.status')}
+      <td>
+        <WorkerStatus {status} />
+      </td>
+    {:else if label === translate('workers.name')}
       <WorkerTableCell
         attribute="WorkerInstanceKey"
         value={worker.workerHeartbeat.workerInstanceKey}
@@ -53,11 +38,17 @@
         })}
         {filterable}
       />
-    {:else if label === translate('workers.status')}
-      <td>
-        <WorkerStatus {status} />
-      </td>
-    {:else if label === translate('workers.sdk')}
+    {:else if label === translate('workers.task-queue')}
+      <WorkerTableCell
+        attribute="TaskQueue"
+        value={worker.workerHeartbeat.taskQueue}
+        {filterable}
+      />
+    {:else if label === translate('workers.compute')}
+      <td>{translate('workers.self-managed')}</td>
+    {:else if label === translate('workers.last-heartbeat')}
+      <td>{worker.workerHeartbeat.heartbeatTime}</td>
+    {:else if label === translate('workers.sdk-version')}
       <WorkerTableCell
         attribute="SdkName"
         value={worker.workerHeartbeat.sdkName}
@@ -68,25 +59,8 @@
           version={worker.workerHeartbeat.sdkVersion}
         />
       </WorkerTableCell>
-    {:else if label === translate('workers.workflow-task-slots')}
-      <td
-        >{worker.workerHeartbeat?.workflowTaskSlotsInfo?.currentUsedSlots ?? 0} /
-        {worker.workerHeartbeat?.workflowTaskSlotsInfo?.currentAvailableSlots ??
-          0}</td
-      >
-    {:else if label === translate('workers.activity-task-slots')}
-      <td
-        >{worker.workerHeartbeat?.activityTaskSlotsInfo?.currentUsedSlots ?? 0} /
-        {worker.workerHeartbeat?.activityTaskSlotsInfo?.currentAvailableSlots ??
-          0}</td
-      >
-    {:else if label === translate('workers.nexus-task-slots')}
-      <td
-        >{worker.workerHeartbeat?.nexusTaskSlotsInfo?.currentUsedSlots ?? 0} / {worker
-          .workerHeartbeat?.nexusTaskSlotsInfo?.currentAvailableSlots ?? 0}</td
-      >
-    {:else if label === translate('workers.type')}
-      <td><Badge>{translate('workers.type-traditional')}</Badge></td>
+    {:else if label === ''}
+      <td></td>
     {:else}
       <td></td>
     {/if}

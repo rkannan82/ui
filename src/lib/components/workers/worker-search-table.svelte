@@ -52,7 +52,6 @@
     { label: translate('workers.compute') },
     { label: translate('workers.last-heartbeat') },
     { label: translate('workers.sdk-version') },
-    { label: '' },
   ];
 
   const onFetch = $derived(() =>
