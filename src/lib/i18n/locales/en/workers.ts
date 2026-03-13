@@ -117,11 +117,11 @@ export const Strings = {
     'Select how your worker activities will be executed.',
   'provider-lambda': 'AWS Lambda',
   'provider-lambda-description':
-    'Run activities as serverless Lambda function invocations.',
+    'Run workers as Lambda functions in your AWS account.',
   'provider-coming-soon': 'More providers coming soon',
   'provider-coming-soon-description':
     'Support for additional compute providers is planned.',
-  'setup-guide-title': 'Prerequisites: AWS Setup Guide',
+  'setup-guide-title': 'AWS Setup Guide',
   'setup-guide-intro':
     'Before creating a serverless worker, you need a Lambda function and an IAM role in your AWS account.',
   'setup-guide-lambda-console': 'Open AWS Lambda Console',
@@ -192,13 +192,19 @@ export const Strings = {
   'open-aws-iam': 'Open AWS IAM Console',
   'worker-scaling-limits': 'Worker Scaling and Limits',
   metrics: 'Metrics',
+  workflow: 'Workflow',
+  activity: 'Activity',
   'workflow-tasks': 'Workflow Tasks',
   'activity-tasks': 'Activity Tasks',
   'nexus-tasks': 'Nexus Tasks',
   'local-activities': 'Local Activities',
+  slots: 'Slots',
   'slots-used': 'Slots Used',
   'slots-available': 'Slots Available',
+  used: 'Used',
+
   'tasks-processed': 'Tasks Processed',
+  poller: 'Poller',
   'poller-count': 'Poller Count',
   'poller-type': 'Poller Type',
   'last-poll': 'Last Poll',
@@ -229,4 +235,17 @@ export const Strings = {
   'configuration-section': 'Configuration',
   'compute-section': 'Compute',
   'scaling-section': 'Scaling and Limits',
+  'configuration-description':
+    'Set a name and Task Queue to deploy this Worker.',
+  'compute-description': 'Choose where your Worker runs.',
+  'provider-cloud-run': 'Google Cloud Run',
+  'provider-cloud-run-description':
+    'Run workers as Cloud Run services in your GCP project.',
+  'provider-vercel': 'Vercel Functions',
+  'provider-vercel-description':
+    'Run workers as serverless functions on the Vercel platform.',
+  'coming-soon': 'Coming Soon',
+  'edit-scaling-limits': 'Edit Scaling and Limits',
+  'setup-step-setup': 'Setup',
+  'setup-step-templates': 'Templates',
 } as const;

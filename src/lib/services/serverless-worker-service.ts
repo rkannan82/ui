@@ -113,22 +113,23 @@ export function getServerlessWorkerDetail(
   const worker = getServerlessWorker(id);
   if (!worker) return undefined;
 
-  const mockMetricsCard = (type: string) => ({
+  const mockMetricsCard = (slotType: string, pollerStrategy: string) => ({
+    slotType,
     slotsUsed: Math.floor(Math.random() * 8) + 1,
-    slotsAvailable: 10,
+    slotsAvailable: 100,
     tasksProcessed: Math.floor(Math.random() * 5000) + 100,
     pollerCount: Math.floor(Math.random() * 5) + 1,
-    pollerType: type,
+    pollerStrategy,
     lastPoll: new Date(Date.now() - Math.random() * 60000).toISOString(),
   });
 
   return {
     ...worker,
     metrics: {
-      workflow: mockMetricsCard('Workflow'),
-      activity: mockMetricsCard('Activity'),
-      nexus: mockMetricsCard('Nexus'),
-      localActivities: mockMetricsCard('Local Activity'),
+      workflow: mockMetricsCard('Fixed', 'Autoscaling'),
+      activity: mockMetricsCard('Resource based', 'Autoscaling'),
+      nexus: mockMetricsCard('Fixed', 'Manual'),
+      localActivities: mockMetricsCard('Fixed', 'Autoscaling'),
     },
     hostInfo: {
       region: worker.region,

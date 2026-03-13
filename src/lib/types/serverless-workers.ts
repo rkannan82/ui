@@ -41,11 +41,12 @@ export type ServerlessWorkerUpdateInput = Pick<
 >;
 
 export type ServerlessWorkerMetricsCard = {
+  slotType: string;
   slotsUsed: number;
   slotsAvailable: number;
   tasksProcessed: number;
   pollerCount: number;
-  pollerType: string;
+  pollerStrategy: string;
   lastPoll: string;
 };
 
