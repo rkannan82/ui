@@ -1,17 +1,12 @@
 <script lang="ts">
-  import { writable } from 'svelte/store';
-
   import { superForm } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
 
   import DeleteWorkerModal from '$lib/components/workers/delete-worker-modal.svelte';
-  import Badge from '$lib/holocene/badge.svelte';
   import Button from '$lib/holocene/button.svelte';
   import Card from '$lib/holocene/card.svelte';
   import Icon from '$lib/holocene/icon/icon.svelte';
   import Input from '$lib/holocene/input/input.svelte';
-  import RadioGroup from '$lib/holocene/radio-input/radio-group.svelte';
-  import RadioInput from '$lib/holocene/radio-input/radio-input.svelte';
   import Tooltip from '$lib/holocene/tooltip.svelte';
   import { translate } from '$lib/i18n/translate';
   import {
@@ -22,6 +17,8 @@
   import type { ServerlessWorker } from '$lib/types/serverless-workers';
 
   import { editSchema, type ValidationState } from './shared';
+
+  import ComputeProviderPicker from './compute-provider-picker.svelte';
 
   type Props = {
     namespace: string;
@@ -93,8 +90,6 @@
     const result = await validateTaskQueue(name);
     taskQueueValidation = { checking: false, result };
   }
-
-  const provider = writable<string>('lambda');
 
   let showDeleteModal = $state(false);
 </script>
@@ -172,22 +167,8 @@
         </p>
       </div>
 
-      <div class="flex flex-col">
-        <div class="flex items-start gap-3 border border-subtle p-4">
-          <RadioGroup name="provider" group={provider} class="w-full">
-            <RadioInput
-              value="lambda"
-              id="provider-lambda"
-              label={translate('workers.provider-lambda')}
-              description={translate('workers.provider-lambda-description')}
-            />
-          </RadioGroup>
-          <Badge type="primary" class="shrink-0">Enabled</Badge>
-        </div>
-
-        <div
-          class="flex flex-col gap-5 border border-t-0 border-subtle bg-subtle/50 p-5"
-        >
+      <ComputeProviderPicker>
+        <div class="flex flex-col gap-5">
           <div class="flex flex-col gap-1">
             <div class="flex items-center gap-1">
               <label for="lambdaArn" class="text-sm font-medium">
@@ -319,49 +300,7 @@
             error={!!$errors.idleTimeoutSeconds?.[0]}
           />
         </div>
-
-        <div
-          class="flex items-start gap-3 border border-t-0 border-subtle p-4 opacity-50"
-        >
-          <RadioGroup
-            name="provider-disabled-1"
-            group={provider}
-            class="w-full"
-          >
-            <RadioInput
-              value="cloud-run"
-              id="provider-cloud-run"
-              label={translate('workers.provider-cloud-run')}
-              description={translate('workers.provider-cloud-run-description')}
-              disabled
-            />
-          </RadioGroup>
-          <Badge type="subtle" class="shrink-0"
-            >{translate('workers.coming-soon')}</Badge
-          >
-        </div>
-
-        <div
-          class="flex items-start gap-3 border border-t-0 border-subtle p-4 opacity-50"
-        >
-          <RadioGroup
-            name="provider-disabled-2"
-            group={provider}
-            class="w-full"
-          >
-            <RadioInput
-              value="vercel"
-              id="provider-vercel"
-              label={translate('workers.provider-vercel')}
-              description={translate('workers.provider-vercel-description')}
-              disabled
-            />
-          </RadioGroup>
-          <Badge type="subtle" class="shrink-0"
-            >{translate('workers.coming-soon')}</Badge
-          >
-        </div>
-      </div>
+      </ComputeProviderPicker>
     </div>
   </Card>
 

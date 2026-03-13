@@ -19,6 +19,7 @@
 
   import { createSchema, regions, type ValidationState } from './shared';
 
+  import ComputeProviderPicker from './compute-provider-picker.svelte';
   import ServerlessWorkerSetupGuide from './serverless-worker-setup-guide.svelte';
 
   type Props = {
@@ -164,281 +165,189 @@
         <p class="mb-4 text-sm text-secondary">
           {translate('workers.compute-description')}
         </p>
-        <div class="flex flex-col gap-5">
-          <!-- AWS Lambda (header + fields connected) -->
-          <div>
-            <div class="border border-subtle p-4">
-              <label class="flex cursor-pointer items-start gap-3">
-                <input
-                  type="radio"
-                  name="provider"
-                  value="lambda"
-                  checked
-                  class="surface-primary mt-0.5 h-5 w-5 shrink-0 appearance-none rounded-full border border-secondary bg-interactive shadow-[inset_0_0_0_1px] shadow-white checked:bg-interactive dark:shadow-black"
+        <ComputeProviderPicker>
+          <div class="flex flex-col gap-5">
+            <div class="flex gap-5">
+              <div class="flex flex-1 flex-col gap-1">
+                <div class="flex items-center gap-1">
+                  <label for="lambdaArn" class="text-sm font-medium">
+                    {translate('workers.lambda-arn-label')}
+                  </label>
+                  <Tooltip top text={translate('workers.lambda-arn-help')}>
+                    <Icon
+                      name="circle-question"
+                      class="h-4 w-4 text-secondary"
+                    />
+                  </Tooltip>
+                </div>
+                <Input
+                  bind:value={$form.lambdaArn}
+                  id="lambdaArn"
+                  name="lambdaArn"
+                  labelHidden
+                  label={translate('workers.lambda-arn-label')}
+                  hintText={$errors.lambdaArn?.[0] ||
+                    translate('workers.lambda-arn-hint')}
+                  error={!!$errors.lambdaArn?.[0]}
+                  placeholder={translate('workers.lambda-arn-placeholder')}
+                  required
+                  onblur={checkLambdaArn}
                 />
-                <div class="flex-1">
-                  <span class="text-sm font-medium"
-                    >{translate('workers.provider-lambda')}</span
-                  >
-                  <p class="text-sm text-secondary">
-                    {translate('workers.provider-lambda-description')}
-                  </p>
-                </div>
-              </label>
-            </div>
-            <div class="surface-background -mt-px border border-subtle p-5">
-              <div class="flex flex-col gap-5">
-                <div class="flex gap-5">
-                  <div class="flex flex-1 flex-col gap-1">
-                    <div class="flex items-center gap-1">
-                      <label for="lambdaArn" class="text-sm font-medium">
-                        {translate('workers.lambda-arn-label')}
-                      </label>
-                      <Tooltip top text={translate('workers.lambda-arn-help')}>
-                        <Icon
-                          name="circle-question"
-                          class="h-4 w-4 text-secondary"
-                        />
-                      </Tooltip>
-                    </div>
-                    <Input
-                      bind:value={$form.lambdaArn}
-                      id="lambdaArn"
-                      name="lambdaArn"
-                      labelHidden
-                      label={translate('workers.lambda-arn-label')}
-                      hintText={$errors.lambdaArn?.[0] ||
-                        translate('workers.lambda-arn-hint')}
-                      error={!!$errors.lambdaArn?.[0]}
-                      placeholder={translate('workers.lambda-arn-placeholder')}
-                      required
-                      onblur={checkLambdaArn}
-                    />
-                    {#if lambdaValidation.checking}
-                      <div
-                        class="flex items-center gap-2 text-xs text-secondary"
-                      >
-                        <Icon name="spinner" class="h-3 w-3 animate-spin" />
-                        <span
-                          >{translate(
-                            'workers.validation-checking-lambda',
-                          )}</span
-                        >
-                      </div>
-                    {:else if lambdaValidation.result}
-                      <Alert
-                        intent={lambdaValidation.result.valid
-                          ? 'success'
-                          : 'error'}
-                        title={lambdaValidation.result.message}
-                      />
-                    {/if}
+                {#if lambdaValidation.checking}
+                  <div class="flex items-center gap-2 text-xs text-secondary">
+                    <Icon name="spinner" class="h-3 w-3 animate-spin" />
+                    <span
+                      >{translate('workers.validation-checking-lambda')}</span
+                    >
                   </div>
-
-                  <div class="flex w-40 flex-col gap-1">
-                    <div class="flex items-center gap-1">
-                      <label for="region" class="text-sm font-medium">
-                        {translate('workers.region-label')}
-                      </label>
-                      <Tooltip top text={translate('workers.region-help')}>
-                        <Icon
-                          name="circle-question"
-                          class="h-4 w-4 text-secondary"
-                        />
-                      </Tooltip>
-                    </div>
-                    <Combobox
-                      id="region"
-                      label={translate('workers.region-label')}
-                      labelHidden
-                      placeholder="Search regions..."
-                      noResultsText="No matching regions"
-                      options={regions}
-                      optionValueKey="value"
-                      optionLabelKey="label"
-                      bind:value={$form.region}
-                      onchange={checkRegion}
-                      required
-                      error={$errors.region?.[0]}
-                    />
-                    {#if regionValidation.checking}
-                      <div
-                        class="flex items-center gap-2 text-xs text-secondary"
-                      >
-                        <Icon name="spinner" class="h-3 w-3 animate-spin" />
-                        <span
-                          >{translate(
-                            'workers.validation-checking-region',
-                          )}</span
-                        >
-                      </div>
-                    {:else if regionValidation.result}
-                      <Alert
-                        intent={regionValidation.result.valid
-                          ? 'success'
-                          : 'warning'}
-                        title={regionValidation.result.message}
-                      />
-                    {/if}
-                  </div>
-                </div>
-
-                <div class="flex flex-col gap-1">
-                  <div class="flex items-center gap-1">
-                    <label for="iamRoleArn" class="text-sm font-medium">
-                      {translate('workers.iam-role-label')}
-                    </label>
-                    <Tooltip top text={translate('workers.iam-role-help')}>
-                      <Icon
-                        name="circle-question"
-                        class="h-4 w-4 text-secondary"
-                      />
-                    </Tooltip>
-                  </div>
-                  <Input
-                    bind:value={$form.iamRoleArn}
-                    id="iamRoleArn"
-                    name="iamRoleArn"
-                    labelHidden
-                    label={translate('workers.iam-role-label')}
-                    hintText={$errors.iamRoleArn?.[0] ||
-                      translate('workers.iam-role-hint')}
-                    error={!!$errors.iamRoleArn?.[0]}
-                    placeholder={translate('workers.iam-role-placeholder')}
-                    required
-                    onblur={checkIamRole}
+                {:else if lambdaValidation.result}
+                  <Alert
+                    intent={lambdaValidation.result.valid ? 'success' : 'error'}
+                    title={lambdaValidation.result.message}
                   />
-                  {#if iamValidation.checking}
-                    <div class="flex items-center gap-2 text-xs text-secondary">
-                      <Icon name="spinner" class="h-3 w-3 animate-spin" />
-                      <span>{translate('workers.validation-checking-iam')}</span
-                      >
-                    </div>
-                  {:else if iamValidation.result}
-                    <Alert
-                      intent={iamValidation.result.valid ? 'success' : 'error'}
-                      title={iamValidation.result.message}
+                {/if}
+              </div>
+
+              <div class="flex w-40 flex-col gap-1">
+                <div class="flex items-center gap-1">
+                  <label for="region" class="text-sm font-medium">
+                    {translate('workers.region-label')}
+                  </label>
+                  <Tooltip top text={translate('workers.region-help')}>
+                    <Icon
+                      name="circle-question"
+                      class="h-4 w-4 text-secondary"
                     />
-                  {/if}
+                  </Tooltip>
                 </div>
-
-                <div class="border-t border-subtle"></div>
-
-                <div>
-                  <Button
-                    variant="secondary"
-                    on:click={() => (showScaling = !showScaling)}
-                  >
-                    {translate('workers.edit-scaling-limits')}
-                  </Button>
-                </div>
-
-                {#if showScaling}
-                  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <Input
-                      value={String($form.maxWorkers)}
-                      oninput={(e) =>
-                        ($form.maxWorkers = Number(
-                          (e.currentTarget as HTMLInputElement).value,
-                        ))}
-                      id="maxWorkers"
-                      name="maxWorkers"
-                      label={translate('workers.max-workers-label')}
-                      hintText={translate('workers.max-workers-hint')}
-                    />
-                    <Input
-                      value={String($form.maxConcurrentActivities)}
-                      oninput={(e) =>
-                        ($form.maxConcurrentActivities = Number(
-                          (e.currentTarget as HTMLInputElement).value,
-                        ))}
-                      id="maxConcurrentActivities"
-                      name="maxConcurrentActivities"
-                      label={translate('workers.max-concurrent-label')}
-                      hintText={translate('workers.max-concurrent-hint')}
-                    />
-                    <Input
-                      value={String($form.maxTaskQueueActivitiesPerSecond)}
-                      oninput={(e) =>
-                        ($form.maxTaskQueueActivitiesPerSecond = Number(
-                          (e.currentTarget as HTMLInputElement).value,
-                        ))}
-                      id="maxRate"
-                      name="maxRate"
-                      label={translate('workers.max-rate-label')}
-                      hintText={translate('workers.max-rate-hint')}
-                    />
-                    <Input
-                      value={String($form.idleTimeoutSeconds)}
-                      oninput={(e) =>
-                        ($form.idleTimeoutSeconds = Number(
-                          (e.currentTarget as HTMLInputElement).value,
-                        ))}
-                      id="idleTimeout"
-                      name="idleTimeout"
-                      label={translate('workers.idle-timeout-label')}
-                      hintText={translate('workers.idle-timeout-hint')}
-                    />
+                <Combobox
+                  id="region"
+                  label={translate('workers.region-label')}
+                  labelHidden
+                  placeholder="Search regions..."
+                  noResultsText="No matching regions"
+                  options={regions}
+                  optionValueKey="value"
+                  optionLabelKey="label"
+                  bind:value={$form.region}
+                  onchange={checkRegion}
+                  required
+                  error={$errors.region?.[0]}
+                />
+                {#if regionValidation.checking}
+                  <div class="flex items-center gap-2 text-xs text-secondary">
+                    <Icon name="spinner" class="h-3 w-3 animate-spin" />
+                    <span
+                      >{translate('workers.validation-checking-region')}</span
+                    >
                   </div>
+                {:else if regionValidation.result}
+                  <Alert
+                    intent={regionValidation.result.valid
+                      ? 'success'
+                      : 'warning'}
+                    title={regionValidation.result.message}
+                  />
                 {/if}
               </div>
             </div>
-          </div>
 
-          <!-- Google Cloud Run (disabled) -->
-          <div class="border border-subtle p-4 opacity-50">
-            <label class="flex cursor-not-allowed items-start gap-3">
-              <input
-                type="radio"
-                name="provider"
-                value="cloud-run"
-                disabled
-                class="surface-primary mt-0.5 h-5 w-5 shrink-0 cursor-not-allowed appearance-none rounded-full border border-secondary opacity-50"
-              />
-              <div class="flex-1">
-                <div class="flex items-center gap-2">
-                  <span class="text-sm font-medium"
-                    >{translate('workers.provider-cloud-run')}</span
-                  >
-                  <span
-                    class="surface-subtle inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium leading-tight"
-                    >{translate('workers.coming-soon')}</span
-                  >
-                </div>
-                <p class="text-sm text-secondary">
-                  {translate('workers.provider-cloud-run-description')}
-                </p>
+            <div class="flex flex-col gap-1">
+              <div class="flex items-center gap-1">
+                <label for="iamRoleArn" class="text-sm font-medium">
+                  {translate('workers.iam-role-label')}
+                </label>
+                <Tooltip top text={translate('workers.iam-role-help')}>
+                  <Icon name="circle-question" class="h-4 w-4 text-secondary" />
+                </Tooltip>
               </div>
-            </label>
-          </div>
+              <Input
+                bind:value={$form.iamRoleArn}
+                id="iamRoleArn"
+                name="iamRoleArn"
+                labelHidden
+                label={translate('workers.iam-role-label')}
+                hintText={$errors.iamRoleArn?.[0] ||
+                  translate('workers.iam-role-hint')}
+                error={!!$errors.iamRoleArn?.[0]}
+                placeholder={translate('workers.iam-role-placeholder')}
+                required
+                onblur={checkIamRole}
+              />
+              {#if iamValidation.checking}
+                <div class="flex items-center gap-2 text-xs text-secondary">
+                  <Icon name="spinner" class="h-3 w-3 animate-spin" />
+                  <span>{translate('workers.validation-checking-iam')}</span>
+                </div>
+              {:else if iamValidation.result}
+                <Alert
+                  intent={iamValidation.result.valid ? 'success' : 'error'}
+                  title={iamValidation.result.message}
+                />
+              {/if}
+            </div>
 
-          <!-- Vercel Functions (disabled) -->
-          <div class="border border-subtle p-4 opacity-50">
-            <label class="flex cursor-not-allowed items-start gap-3">
-              <input
-                type="radio"
-                name="provider"
-                value="vercel"
-                disabled
-                class="surface-primary mt-0.5 h-5 w-5 shrink-0 cursor-not-allowed appearance-none rounded-full border border-secondary opacity-50"
-              />
-              <div class="flex-1">
-                <div class="flex items-center gap-2">
-                  <span class="text-sm font-medium"
-                    >{translate('workers.provider-vercel')}</span
-                  >
-                  <span
-                    class="surface-subtle inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium leading-tight"
-                    >{translate('workers.coming-soon')}</span
-                  >
-                </div>
-                <p class="text-sm text-secondary">
-                  {translate('workers.provider-vercel-description')}
-                </p>
+            <div class="border-t border-subtle"></div>
+
+            <div>
+              <Button
+                variant="secondary"
+                on:click={() => (showScaling = !showScaling)}
+              >
+                {translate('workers.edit-scaling-limits')}
+              </Button>
+            </div>
+
+            {#if showScaling}
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <Input
+                  value={String($form.maxWorkers)}
+                  oninput={(e) =>
+                    ($form.maxWorkers = Number(
+                      (e.currentTarget as HTMLInputElement).value,
+                    ))}
+                  id="maxWorkers"
+                  name="maxWorkers"
+                  label={translate('workers.max-workers-label')}
+                  hintText={translate('workers.max-workers-hint')}
+                />
+                <Input
+                  value={String($form.maxConcurrentActivities)}
+                  oninput={(e) =>
+                    ($form.maxConcurrentActivities = Number(
+                      (e.currentTarget as HTMLInputElement).value,
+                    ))}
+                  id="maxConcurrentActivities"
+                  name="maxConcurrentActivities"
+                  label={translate('workers.max-concurrent-label')}
+                  hintText={translate('workers.max-concurrent-hint')}
+                />
+                <Input
+                  value={String($form.maxTaskQueueActivitiesPerSecond)}
+                  oninput={(e) =>
+                    ($form.maxTaskQueueActivitiesPerSecond = Number(
+                      (e.currentTarget as HTMLInputElement).value,
+                    ))}
+                  id="maxRate"
+                  name="maxRate"
+                  label={translate('workers.max-rate-label')}
+                  hintText={translate('workers.max-rate-hint')}
+                />
+                <Input
+                  value={String($form.idleTimeoutSeconds)}
+                  oninput={(e) =>
+                    ($form.idleTimeoutSeconds = Number(
+                      (e.currentTarget as HTMLInputElement).value,
+                    ))}
+                  id="idleTimeout"
+                  name="idleTimeout"
+                  label={translate('workers.idle-timeout-label')}
+                  hintText={translate('workers.idle-timeout-hint')}
+                />
               </div>
-            </label>
+            {/if}
           </div>
-        </div>
+        </ComputeProviderPicker>
       </Card>
 
       <div class="flex gap-4">
