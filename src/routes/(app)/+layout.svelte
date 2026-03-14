@@ -29,6 +29,7 @@
     routeForArchivalWorkflows,
     routeForBatchOperations,
     routeForEventHistoryImport,
+    routeForInsights,
     routeForLoginPage,
     routeForNamespaces,
     routeForNexus,
@@ -79,6 +80,7 @@
       schedulesRoute: routeForSchedules({ namespace }),
       batchOperationsRoute: routeForBatchOperations({ namespace }),
       workerDeploymentsRoute: routeForWorkerDeployments({ namespace }),
+      insightsRoute: routeForInsights({ namespace }),
       archivalRoute: routeForArchivalWorkflows({ namespace }),
       namespacesRoute: routeForNamespaces(),
       nexusRoute: routeForNexus(),
@@ -93,6 +95,7 @@
       schedulesRoute,
       batchOperationsRoute,
       workerDeploymentsRoute,
+      insightsRoute,
       archivalRoute,
       namespacesRoute,
       nexusRoute,
@@ -103,6 +106,7 @@
       schedulesRoute: string;
       batchOperationsRoute: string;
       workerDeploymentsRoute: string;
+      insightsRoute: string;
       archivalRoute: string;
       namespacesRoute: string;
       nexusRoute: string;
@@ -121,6 +125,7 @@
           !path.includes(schedulesRoute) &&
           !path.includes(batchOperationsRoute) &&
           !path.includes(workerDeploymentsRoute) &&
+          !path.includes(insightsRoute) &&
           !path.includes(standaloneActivitiesRoute) &&
           !path.includes(archivalRoute),
       },
@@ -129,6 +134,13 @@
         icon: 'workflow',
         label: translate('common.workflows'),
         isActive: (path) => path.includes(workflowsRoute),
+      },
+      {
+        href: insightsRoute,
+        icon: 'eye-show',
+        label: 'Insights',
+        tooltip: 'Proactive health monitoring and issue detection',
+        isActive: (path) => path.includes(insightsRoute),
       },
       {
         href: standaloneActivitiesRoute,
@@ -199,6 +211,7 @@
     schedulesRoute,
     batchOperationsRoute,
     workerDeploymentsRoute,
+    insightsRoute,
     archivalRoute,
     standaloneActivitiesRoute,
   } = $derived(routes);
@@ -208,6 +221,7 @@
       schedulesRoute,
       workerDeploymentsRoute,
       batchOperationsRoute,
+      insightsRoute,
       archivalRoute,
       standaloneActivitiesRoute,
     ].some((route) => page.url.href.includes(route)),
@@ -230,6 +244,10 @@
       {
         subPath: 'worker-deployments',
         fullRoute: routeForWorkerDeployments({ namespace }),
+      },
+      {
+        subPath: 'insights',
+        fullRoute: routeForInsights({ namespace }),
       },
     ];
 

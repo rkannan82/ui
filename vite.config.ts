@@ -27,6 +27,16 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    proxy: {
+      '^/api/v1/namespaces/.+/insights': {
+        target: 'http://localhost:8090',
+        changeOrigin: true,
+      },
+      '/api/v1': {
+        target: 'http://localhost:8233',
+        changeOrigin: true,
+      },
+    },
   },
   preview: {
     port: 3000,

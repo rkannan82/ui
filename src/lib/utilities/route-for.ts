@@ -295,6 +295,16 @@ export const routeForWorkers = (
   return `${routeForWorkflow(parameters)}/workers`;
 };
 
+export const routeForInsights = ({
+  namespace,
+}: {
+  namespace: string;
+}): ResolvedPathname => {
+  return resolve('/namespaces/[namespace]/insights', {
+    namespace,
+  });
+};
+
 export const routeForWorkerDeployments = ({
   namespace,
 }: {
