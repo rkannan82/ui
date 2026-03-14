@@ -18,6 +18,22 @@ export type Remediation = {
   href?: string;
 };
 
+export type EventCorrelation = {
+  event: {
+    id: string;
+    type: string;
+    timestamp: string;
+    namespace: string;
+    resourceType: string;
+    resourceId: string;
+    title: string;
+    details?: Record<string, string>;
+  };
+  timeDelta: string;
+  confidence: 'high' | 'medium' | 'low';
+  explanation: string;
+};
+
 export type TaskQueueInsight = {
   taskQueue: string;
   type: InsightType;
@@ -34,6 +50,7 @@ export type TaskQueueInsight = {
     pollerCount: number;
   };
   affectedWorkers?: string[];
+  correlations?: EventCorrelation[];
 };
 
 export type TaskQueueStats = {

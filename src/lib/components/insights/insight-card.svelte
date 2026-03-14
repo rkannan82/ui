@@ -116,6 +116,59 @@
         </div>
       </div>
 
+      {#if insight.correlations?.length}
+        <div
+          class="rounded-md border border-purple-300 bg-purple-50 p-3 dark:border-purple-700 dark:bg-purple-950"
+        >
+          <h4
+            class="mb-2 text-xs font-semibold uppercase tracking-wide text-purple-700 dark:text-purple-300"
+          >
+            Correlated Events
+          </h4>
+          <div class="space-y-2">
+            {#each insight.correlations as correlation}
+              <div class="flex items-start gap-2 text-sm">
+                <span class="mt-0.5 text-purple-500">&#x25C6;</span>
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="font-medium text-primary"
+                      >{correlation.event.title}</span
+                    >
+                    <span class="text-xs text-secondary"
+                      >({correlation.timeDelta} ago)</span
+                    >
+                    <Badge
+                      type={correlation.confidence === 'high'
+                        ? 'danger'
+                        : correlation.confidence === 'medium'
+                          ? 'warning'
+                          : 'primary'}
+                      class="px-1.5 py-0 text-xs"
+                    >
+                      {correlation.confidence}
+                    </Badge>
+                  </div>
+                  <p class="mt-0.5 text-xs text-secondary">
+                    {correlation.explanation}
+                  </p>
+                  {#if correlation.event.details}
+                    <div class="mt-1 flex flex-wrap gap-1.5">
+                      {#each Object.entries(correlation.event.details) as [key, value]}
+                        <span
+                          class="rounded bg-purple-100 px-1.5 py-0.5 font-mono text-xs text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+                        >
+                          {key}: {value}
+                        </span>
+                      {/each}
+                    </div>
+                  {/if}
+                </div>
+              </div>
+            {/each}
+          </div>
+        </div>
+      {/if}
+
       {#if insight.stats}
         <div>
           <h4

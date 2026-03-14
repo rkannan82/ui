@@ -5,11 +5,14 @@
   import { page } from '$app/state';
 
   import InsightsDashboard from '$lib/components/insights/insights-dashboard.svelte';
+  import InsightsTimeline from '$lib/components/insights/insights-timeline.svelte';
   import PageTitle from '$lib/components/page-title.svelte';
   import Icon from '$lib/holocene/icon/icon.svelte';
   import {
+    fetchEvents,
     getInsightsSummary,
     type InsightsSummary,
+    type TimelineEvent,
   } from '$lib/services/insights-service';
 
   const namespace = $derived(page.params.namespace);
@@ -17,6 +20,7 @@
   let filterInput = $state('');
   let filterQueues = $state<string[]>([]);
   let insightsSummary = $state<InsightsSummary | null>(null);
+  let timelineEvents = $state<TimelineEvent[]>([]);
   let loading = $state(false);
   let error = $state<string | null>(null);
   let lastScannedAt = $state<Date | null>(null);
@@ -79,10 +83,15 @@
     loading = true;
     error = null;
     try {
-      insightsSummary = await getInsightsSummary(
-        namespace,
-        filterQueues.length > 0 ? filterQueues : undefined,
-      );
+      const [summary, events] = await Promise.all([
+        getInsightsSummary(
+          namespace,
+          filterQueues.length > 0 ? filterQueues : undefined,
+        ),
+        fetchEvents(namespace),
+      ]);
+      insightsSummary = summary;
+      timelineEvents = events;
       lastScannedAt = new Date();
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to fetch insights data';
@@ -220,6 +229,7 @@
       </div>
     </div>
   {:else if insightsSummary}
+    <InsightsTimeline events={timelineEvents} />
     <InsightsDashboard summary={insightsSummary} {namespace} />
   {/if}
 </div>

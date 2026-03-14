@@ -1,4 +1,18 @@
-import type { TaskQueueInsight } from '$lib/utilities/triage-insights';
+import type {
+  EventCorrelation,
+  TaskQueueInsight,
+} from '$lib/utilities/triage-insights';
+
+export type TimelineEvent = {
+  id: string;
+  type: string;
+  timestamp: string;
+  namespace: string;
+  resourceType: string;
+  resourceId: string;
+  title: string;
+  details?: Record<string, string>;
+};
 
 export type InsightsResult = {
   taskQueue: string;
@@ -33,6 +47,22 @@ export type InsightsSummary = {
   workflowHealth: WorkflowHealthSummary | null;
 };
 
+type ServerCorrelation = {
+  event: {
+    id: string;
+    type: string;
+    timestamp: string;
+    namespace: string;
+    resourceType: string;
+    resourceId: string;
+    title: string;
+    details?: Record<string, string>;
+  };
+  timeDelta: string;
+  confidence: string;
+  explanation: string;
+};
+
 type ServerInsight = {
   type: string;
   severity: string;
@@ -43,6 +73,7 @@ type ServerInsight = {
   rootCause: string;
   remediations: { label: string; description: string; action?: string }[];
   affectedWorkers?: string[];
+  correlations?: ServerCorrelation[];
 };
 
 type ServerTaskQueueContext = {
@@ -76,6 +107,15 @@ function mapSeverity(s: string): 'critical' | 'warning' | 'info' {
   return 'info';
 }
 
+function mapCorrelation(sc: ServerCorrelation): EventCorrelation {
+  return {
+    event: sc.event,
+    timeDelta: sc.timeDelta,
+    confidence: sc.confidence as 'high' | 'medium' | 'low',
+    explanation: sc.explanation,
+  };
+}
+
 function mapInsight(
   si: ServerInsight,
   contextMap: Map<string, ServerTaskQueueContext>,
@@ -103,6 +143,7 @@ function mapInsight(
           pollerCount: ctx.stats.activePollerCount,
         }
       : undefined,
+    correlations: si.correlations?.map(mapCorrelation),
   };
 }
 
@@ -183,4 +224,19 @@ export async function getInsightsSummary(
     allInsights,
     workflowHealth: data.workflowHealth,
   };
+}
+
+export async function fetchEvents(
+  namespace: string,
+  since = '30m',
+): Promise<TimelineEvent[]> {
+  const url = `/api/v1/namespaces/${encodeURIComponent(namespace)}/events?since=${since}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    return [];
+  }
+
+  const data: { events: TimelineEvent[] } = await response.json();
+  return data.events ?? [];
 }

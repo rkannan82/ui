@@ -28,7 +28,7 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      '^/api/v1/namespaces/.+/insights': {
+      '^/api/v1/namespaces/.+/(insights|events)': {
         target: 'http://localhost:8090',
         changeOrigin: true,
       },
