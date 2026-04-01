@@ -26,9 +26,22 @@
   let lastScannedAt = $state<Date | null>(null);
   let showFilter = $state(false);
 
+  let prevNamespace = $state('');
+
   onMount(() => {
     filterQueues = loadSavedFilters();
+    prevNamespace = namespace;
     runScan();
+  });
+
+  $effect(() => {
+    if (prevNamespace && namespace !== prevNamespace) {
+      prevNamespace = namespace;
+      insightsSummary = null;
+      timelineEvents = [];
+      filterQueues = loadSavedFilters();
+      runScan();
+    }
   });
 
   function loadSavedFilters(): string[] {
